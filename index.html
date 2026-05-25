@@ -110,6 +110,51 @@ tr:last-child td{border-bottom:none}
 #tab-fundos .card-header h2 { color:var(--gold); }
 #tab-fundos .card-header h2 span { font-size:.7rem;color:var(--text3);font-weight:400; }
 
+/* ===== Badge circular count ===== */
+.badge-count {
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  font-size:11px;font-weight:700;
+  background:rgba(245,200,66,.15);color:var(--gold);
+  border:1px solid rgba(245,200,66,.35);
+  margin-left:7px;flex-shrink:0;
+}
+.detail-inner {
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;margin-bottom:10px;
+}
+.detail-inner-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 14px;border-bottom:1px solid var(--border);
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--text3);
+}
+.detail-item-row {
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--border);
+}
+.detail-item-row:last-child{border-bottom:none;}
+.detail-item-fundo {
+  flex:1;font-size:12px;color:var(--text2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.detail-item-val {
+  font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;
+}
+.detail-total-bar {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 14px;
+  background:rgba(245,200,66,.07);
+  border-top:1px solid rgba(245,200,66,.2);
+}
+.detail-total-bar span:first-child {
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:rgba(245,200,66,.6);
+}
+.detail-total-bar span:last-child {
+  font-size:13px;font-weight:700;color:var(--gold);
+}
+
 /* ===== TAB NAV melhorado ===== */
 .tabs {
   display:flex;gap:4px;margin-bottom:1.5rem;
@@ -775,35 +820,70 @@ function gerarMensagemFundos(item) {
 }
 function renderCardsFundos() {
     const start = currentStartFundos ? new Date(currentStartFundos) : null;
-    const end = currentEndFundos ? new Date(currentEndFundos) : null;
+    const end   = currentEndFundos   ? new Date(currentEndFundos)   : null;
     if (start) start.setHours(0,0,0,0);
-    if (end) end.setHours(0,0,0,0);
+    if (end)   end.setHours(0,0,0,0);
     let filtered = filterByDateFundos(rawDataFundos, start, end);
-    // Aplicar filtro de operação (global)
     if (operacaoFilter.length > 0) {
         filtered = filtered.filter(item => operacaoFilter.includes(item.operacao));
     }
-    filtered.sort((a,b) => {
-        return currentOrderFundos === 'asc' ? a.dataLiq - b.dataLiq : b.dataLiq - a.dataLiq;
-    });
+    filtered.sort((a,b) => currentOrderFundos === 'asc' ? a.dataLiq - b.dataLiq : b.dataLiq - a.dataLiq);
+
     const resultDiv = document.getElementById('resultAreaFundos');
     resultDiv.innerHTML = '';
     if (filtered.length === 0) {
         resultDiv.innerHTML = '<div class="card"><div class="empty-msg">Nenhuma operação encontrada no período com os filtros selecionados.</div></div>';
         return;
     }
-    const card = document.createElement('div');
-    card.className = 'card';
-    const total = filtered.length;
+
+    // ── Agrupar por cliente + data ──────────────────────────────────────────
+    const groupMap = new Map();
+    filtered.forEach(item => {
+        const key = `${item.cliente}|${item.dataLiqStr}`;
+        if (!groupMap.has(key)) groupMap.set(key, { cliente: item.cliente, dataLiqStr: item.dataLiqStr, dataLiq: item.dataLiq, itens: [] });
+        groupMap.get(key).itens.push(item);
+    });
+    const groups = Array.from(groupMap.values());
+    // manter ordem já definida pelo sort
+    groups.sort((a,b) => currentOrderFundos === 'asc' ? a.dataLiq - b.dataLiq : b.dataLiq - a.dataLiq);
+
+    const totalGroups = groups.length;
+    const totalRegistros = filtered.length;
+
     function opBadge(op) {
         const low = (op||'').toLowerCase();
         if (low.includes('aplica')) return `<span class="op-badge aplicacao">${escapeHtml(op)}</span>`;
         if (low.includes('resgate')) return `<span class="op-badge resgate">${escapeHtml(op)}</span>`;
         return `<span class="op-badge outros">${escapeHtml(op)}</span>`;
     }
+
+    function parseBRNumber(str) {
+        if (!str) return 0;
+        // "36.010,17" → 36010.17
+        return parseFloat(str.toString().replace(/\./g,'').replace(',','.')) || 0;
+    }
+
+    function formatBR(num) {
+        return num.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    }
+
+    function gerarMensagemGrupo(group) {
+        const { cliente, dataLiqStr, itens } = group;
+        const total = itens.reduce((acc, it) => acc + parseBRNumber(it.valor), 0);
+        if (itens.length === 1) {
+            const it = itens[0];
+            const valorFmt = it.valor ? `R$ ${it.valor}` : 'valor informado';
+            return `Prezado(a) ${cliente}, tudo bem? Recebemos sua solicitação de ${it.operacao||'operação'} no fundo ${it.fundo} no valor de ${valorFmt}, com liquidação prevista para ${dataLiqStr}. Estamos à disposição para qualquer esclarecimento.`;
+        }
+        const linhas = itens.map(it => `• ${it.operacao||'Operação'} — ${it.fundo}: R$ ${it.valor||'—'}`).join('\n');
+        return `Prezado(a) ${cliente}, tudo bem? Informamos que você possui ${itens.length} movimentações com liquidação prevista para ${dataLiqStr}:\n\n${linhas}\n\nTotal disponível na data: R$ ${formatBR(total)}\n\nEstamos à disposição para qualquer esclarecimento.`;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
     card.innerHTML = `
         <div class="card-header">
-            <h2>📋 Movimentações de Fundos <span>(${total} registro${total!==1?'s':''})</span></h2>
+            <h2>📋 Movimentações de Fundos <span>(${totalGroups} cliente${totalGroups!==1?'s':''} · ${totalRegistros} registro${totalRegistros!==1?'s':''})</span></h2>
             <div style="display:flex; gap:8px; align-items:center;">
                 <button class="toggle-btn" data-key="fundos">Mostrar/Esconder</button>
             </div>
@@ -815,69 +895,105 @@ function renderCardsFundos() {
                     <thead>
                         <tr>
                             <th>Cliente</th>
-                            <th>Operação</th>
-                            <th>Fundo</th>
+                            <th>Operações</th>
+                            <th>Fundo(s)</th>
                             <th>Data Liquidação <button class="sort-icon" data-key="fundos" title="Ordenar por data">${currentOrderFundos === 'asc' ? '🔼' : '🔽'}</button></th>
-                            <th>Valor Solicitado</th>
+                            <th>Total</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
                     <tbody id="tbody-fundos">
-                        ${filtered.map((item, idx) => `
-                            <tr data-cliente="${escapeHtml(item.cliente)}" data-fundo="${escapeHtml(item.fundo)}" data-data="${item.dataLiqStr}" data-valor="${escapeHtml(item.valor)}" data-operacao="${escapeHtml(item.operacao)}">
-                                <td><strong>${escapeHtml(item.cliente)}</strong></td>
-                                <td>${opBadge(item.operacao)}</td>
-                                <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(item.fundo)}">${escapeHtml(item.fundo)}</td>
-                                <td>${item.dataLiqStr}</td>
-                                <td>${item.valor ? 'R$ '+item.valor : '-'}</td>
+                        ${groups.map((group, gIdx) => {
+                            const { cliente, dataLiqStr, itens } = group;
+                            const total = itens.reduce((acc, it) => acc + parseBRNumber(it.valor), 0);
+                            const totalFmt = `R$ ${formatBR(total)}`;
+                            const opsUniq = [...new Set(itens.map(it => it.operacao))];
+                            const fundosList = itens.length === 1
+                                ? `<span title="${escapeHtml(itens[0].fundo)}" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${escapeHtml(itens[0].fundo)}</span>`
+                                : `<span style="color:var(--text3);font-size:11px">${itens.length} fundos</span>`;
+                            const badgesHtml = opsUniq.map(op => opBadge(op)).join(' ');
+                            return `
+                            <tr data-gidx="${gIdx}">
                                 <td>
-                                    <button class="btn-whats" data-idx="${idx}">${waIcon} Enviar WhatsApp</button>
-                                    <button class="expand-icon" data-idx="${idx}">▼</button>
+                                    <div style="display:flex;align-items:center;">
+                                        <strong>${escapeHtml(cliente)}</strong>
+                                        ${itens.length > 1 ? `<span class="badge-count">${itens.length}</span>` : ''}
+                                    </div>
+                                </td>
+                                <td>${badgesHtml}</td>
+                                <td>${itens.length === 1
+                                    ? `<span title="${escapeHtml(itens[0].fundo)}" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;font-size:12px;color:var(--text2)">${escapeHtml(itens[0].fundo)}</span>`
+                                    : `<span style="font-size:12px;color:var(--text3)">${itens.length} fundos — ver detalhes ↓</span>`
+                                }</td>
+                                <td>${dataLiqStr}</td>
+                                <td><strong>${totalFmt}</strong></td>
+                                <td>
+                                    <div style="display:flex;align-items:center;gap:6px;">
+                                        <button class="btn-whats" data-gidx="${gIdx}">${waIcon} Enviar WhatsApp</button>
+                                        <button class="expand-icon" data-gidx="${gIdx}">▼</button>
+                                    </div>
                                 </td>
                             </tr>
-                            <tr class="msg-row-fundos-${idx}" style="display: none;">
-                                <td colspan="6">
-                                    <div class="message-preview" id="preview-fundos-${idx}"></div>
-                                    <button class="btn-copy" data-idx="${idx}">📄 Copiar mensagem</button>
+                            <tr class="msg-row-fundos-${gIdx}" style="display:none;">
+                                <td colspan="6" style="padding:0 12px 12px;">
+                                    ${itens.length > 1 ? `
+                                    <div class="detail-inner">
+                                        <div class="detail-inner-header">
+                                            <span>Detalhamento — ${dataLiqStr}</span>
+                                            <span>${itens.length} movimentações</span>
+                                        </div>
+                                        ${itens.map(it => `
+                                        <div class="detail-item-row">
+                                            ${opBadge(it.operacao)}
+                                            <span class="detail-item-fundo" title="${escapeHtml(it.fundo)}">${escapeHtml(it.fundo)}</span>
+                                            <span class="detail-item-val">${it.valor ? 'R$ '+it.valor : '—'}</span>
+                                        </div>`).join('')}
+                                        <div class="detail-total-bar">
+                                            <span>Total disponível em ${dataLiqStr}</span>
+                                            <span>${totalFmt}</span>
+                                        </div>
+                                    </div>` : ''}
+                                    <div class="message-preview" id="preview-fundos-${gIdx}"></div>
+                                    <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
                                 </td>
-                            </tr>
-                        `).join('')}
+                            </tr>`;
+                        }).join('')}
                     </tbody>
                 </table>
             </div>
         </div>
     `;
     resultDiv.appendChild(card);
-    // Eventos do card
+
+    // ── Eventos ──────────────────────────────────────────────────────────────
     const toggleBtn = card.querySelector('.toggle-btn');
     const tableContainer = card.querySelector('.table-container-fundos');
     toggleBtn.addEventListener('click', () => {
         tableContainer.style.display = tableContainer.style.display === 'none' ? 'block' : 'none';
     });
-    const sortBtn = card.querySelector('.sort-icon');
-    sortBtn.addEventListener('click', () => {
+    card.querySelector('.sort-icon').addEventListener('click', () => {
         currentOrderFundos = currentOrderFundos === 'asc' ? 'desc' : 'asc';
         renderCardsFundos();
     });
-    // Preencher os checkboxes de operação (já deve estar no container)
+
     const uniqueOps = [...new Set(rawDataFundos.map(item => item.operacao).filter(op => op))];
     renderFilterCheckboxes(uniqueOps);
-    // Vincular eventos de expansão e WhatsApp
-    filtered.forEach((item, idx) => {
-        const mainRow = document.querySelector(`#tbody-fundos tr[data-cliente="${escapeHtml(item.cliente)}"]`);
-        if (!mainRow) return;
-        const msgRow = document.querySelector(`.msg-row-fundos-${idx}`);
-        if (!msgRow) return;
+
+    groups.forEach((group, gIdx) => {
+        const mainRow = card.querySelector(`tr[data-gidx="${gIdx}"]`);
+        const msgRow  = card.querySelector(`.msg-row-fundos-${gIdx}`);
+        if (!mainRow || !msgRow) return;
         const expandBtn = mainRow.querySelector('.expand-icon');
-        const whatsBtn = mainRow.querySelector('.btn-whats');
-        const copyBtn = msgRow.querySelector('.btn-copy');
+        const whatsBtn  = mainRow.querySelector('.btn-whats');
+        const copyBtn   = msgRow.querySelector('.btn-copy');
         const previewDiv = msgRow.querySelector('.message-preview');
+
         expandBtn.addEventListener('click', () => {
             if (msgRow.style.display === 'none') {
                 if (!previewDiv.innerHTML) {
-                    const mensagem = gerarMensagemFundos(item);
-                    previewDiv.innerHTML = mensagem;
-                    copyBtn.onclick = () => { navigator.clipboard.writeText(mensagem).then(() => alert('Mensagem copiada!')); };
+                    const mensagem = gerarMensagemGrupo(group);
+                    previewDiv.innerHTML = mensagem.replace(/\n/g, '<br>');
+                    copyBtn.onclick = () => navigator.clipboard.writeText(mensagem).then(() => alert('Mensagem copiada!'));
                 }
                 msgRow.style.display = 'table-row';
                 expandBtn.textContent = '▲';
@@ -886,12 +1002,12 @@ function renderCardsFundos() {
                 expandBtn.textContent = '▼';
             }
         });
+
         whatsBtn.addEventListener('click', () => {
-            const mensagem = gerarMensagemFundos(item);
+            const mensagem = gerarMensagemGrupo(group);
             const numero = getFullPhoneNumber('countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
             if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
-            const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-            window.open(link, '_blank');
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
         });
     });
 }
