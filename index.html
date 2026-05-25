@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Leitor de Vencimentos + WhatsApp</title>
+<title>Leitor de Vencimentos + Fundos | WhatsApp</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -33,15 +33,19 @@ body.light{
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s}
 .header{background:var(--card-bg);border-bottom:1px solid var(--card-border);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .header-logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600}
-.dot{width:28px;height:28px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000}
+.dot{width:auto; padding:0 12px; min-width:36px; background:var(--gold); border-radius:40px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#000; height:32px;}
 .header-right{display:flex;align-items:center;gap:.8rem}
 .hdate{font-size:12px;color:var(--text3);font-family:'Atkinson Hyperlegible',monospace;white-space:nowrap}
 .theme-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:30px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}
 .theme-btn:hover{border-color:var(--gold)}
 .main{max-width:1200px;margin:0 auto;padding:1.5rem}
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.tab-btn{background:transparent;border:none;padding:10px 20px;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;border-radius:30px 30px 0 0;transition:all .2s;}
+.tab-btn.active{color:var(--gold);border-bottom:2px solid var(--gold);background:rgba(245,200,66,.05);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
 .card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:1.4rem;margin-bottom:1.5rem;transition:background .2s,border .2s}
 .card-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-/* upload */
 .upload-area{border:1px dashed var(--border2);border-radius:12px;background:var(--bg3);padding:2rem;text-align:center;cursor:pointer;transition:.2s}
 .upload-area:hover{border-color:var(--gold);background:rgba(245,200,66,.04)}
 .upload-icon{font-size:32px;margin-bottom:.7rem}
@@ -50,7 +54,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .choose-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:30px;padding:8px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
 .choose-btn:hover{border-color:var(--gold);color:var(--gold)}
 .file-loaded{display:flex;align-items:center;gap:8px;background:var(--green-bg);border:1px solid rgba(46,204,113,.3);border-radius:10px;padding:10px 14px;margin-top:1rem;font-size:13px;color:var(--green);font-weight:600}
-/* filtros */
 .filter-bar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
 .fg{display:flex;flex-direction:column;gap:5px}
 .flabel{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:600}
@@ -66,7 +69,6 @@ select.finput{cursor:pointer;appearance:none;padding-right:24px}
 .btn-test:hover{border-color:var(--gold);color:var(--gold)}
 .btn-clear{background:var(--red-bg);border:1px solid rgba(231,76,60,.3);border-radius:30px;padding:8px 16px;font-size:12px;font-weight:700;color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
 .btn-clear:hover{background:rgba(231,76,60,.22)}
-/* tabelas e cards */
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
 .card-header h2{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--gold)}
 .card-header h2 span{font-size:0.7rem;color:var(--text3);font-weight:400}
@@ -89,6 +91,59 @@ tr:last-child td{border-bottom:none}
 .message-preview{background:var(--bg3);border-left:3px solid var(--gold);padding:12px;margin:8px 0;border-radius:12px;font-size:0.75rem;white-space:pre-wrap;word-break:break-word;color:var(--text2);line-height:1.5}
 .footer{text-align:center;font-size:11px;color:var(--text3);padding:1.5rem;border-top:1px solid var(--border);margin-top:1rem}
 @media(max-width:640px){.main{padding:1rem}.phone-bar{flex-direction:column;align-items:stretch}}
+.filter-operacao{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:1rem;padding:0.5rem 0;}
+.filter-operacao label{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;background:var(--bg3);padding:4px 12px;border-radius:30px;border:1px solid var(--border2);transition:all .2s;}
+.filter-operacao label:hover{border-color:var(--gold);}
+.filter-operacao input{margin-right:4px;}
+
+/* ===== FUNDOS: mesmo visual que Vencimentos ===== */
+.op-badge {
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;white-space:nowrap;
+}
+.op-badge.aplicacao  { background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
+.op-badge.resgate    { background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.25);}
+.op-badge.outros     { background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.25);}
+
+/* card-header para fundos igual ao de vencimentos */
+#tab-fundos .card-header h2 { color:var(--gold); }
+#tab-fundos .card-header h2 span { font-size:.7rem;color:var(--text3);font-weight:400; }
+
+/* ===== TAB NAV melhorado ===== */
+.tabs {
+  display:flex;gap:4px;margin-bottom:1.5rem;
+  border-bottom:2px solid var(--border);
+  padding-bottom:0;
+}
+.tab-btn {
+  background:transparent;border:none;
+  padding:10px 22px;font-size:13px;font-weight:600;
+  color:var(--text3);cursor:pointer;
+  border-radius:10px 10px 0 0;
+  transition:all .2s;border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+}
+.tab-btn:hover { color:var(--text2);background:var(--bg3); }
+.tab-btn.active {
+  color:var(--gold);
+  border-bottom:2px solid var(--gold);
+  background:rgba(245,200,66,.06);
+}
+.tab-btn .tab-icon { font-size:15px; }
+
+/* ===== Section divider dentro de cada aba ===== */
+.section-divider {
+  display:flex;align-items:center;gap:10px;
+  margin:1.5rem 0 1rem;
+}
+.section-divider span {
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;color:var(--text3);white-space:nowrap;
+}
+.section-divider::before,.section-divider::after {
+  content:'';flex:1;height:1px;background:var(--border);
+}
 </style>
 </head>
 <body>
@@ -96,7 +151,7 @@ tr:last-child td{border-bottom:none}
 <header class="header">
   <div class="header-logo">
     <div class="dot">PBF</div>
-    Calendário de Vencimentos · WhatsApp
+    Calendário de Vencimentos · Fundos · WhatsApp
   </div>
   <div class="header-right">
     <div class="hdate" id="hDate"></div>
@@ -105,55 +160,109 @@ tr:last-child td{border-bottom:none}
 </header>
 
 <main class="main">
-  <div class="card">
-    <div class="card-title"><span>📂 Planilha de vencimentos</span></div>
-    <div class="upload-area" id="dropZone">
-      <div class="upload-icon">📊</div>
-      <div class="upload-label">Clique ou arraste o arquivo .xlsx</div>
-      <div class="upload-sub">Abas esperadas: renda_fixa · tesouro_direto · coe</div>
-      <button class="choose-btn" id="chooseFileBtn">Selecionar planilha</button>
-      <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
-    </div>
-    <div id="fileLoaded" style="display:none" class="file-loaded">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-      <span id="fileLoadedName"></span>
-    </div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-vencimentos"><span class="tab-icon">📅</span> Vencimentos — Renda Fixa</button>
+    <button class="tab-btn" data-tab="tab-fundos"><span class="tab-icon">📅</span> Vencimentos — Fundos de Investimento</button>
   </div>
 
-  <div id="filterPanel" style="display:none">
+  <!-- ==================== ABA 1: VENCIMENTOS (ORIGINAL) ==================== -->
+  <div id="tab-vencimentos" class="tab-pane active">
     <div class="card">
-      <div class="card-title"><span>📅 Filtro de período</span></div>
-      <div class="filter-bar">
-        <div class="fg"><span class="flabel">Data inicial</span><input class="finput" type="date" id="startDate"></div>
-        <div class="fg"><span class="flabel">Data final</span><input class="finput" type="date" id="endDate"></div>
-        <button class="filter-btn" id="applyFilter">Aplicar filtro</button>
+      <div class="card-title"><span>📂 Planilha de vencimentos (renda_fixa / tesouro_direto / coe)</span></div>
+      <div class="upload-area" id="dropZoneVenc">
+        <div class="upload-icon">📊</div>
+        <div class="upload-label">Clique ou arraste o arquivo .xlsx</div>
+        <div class="upload-sub">Abas esperadas: renda_fixa · tesouro_direto · coe</div>
+        <button class="choose-btn" id="chooseFileBtnVenc">Selecionar planilha</button>
+        <input type="file" id="fileInputVenc" accept=".xlsx,.xls" style="display:none">
+      </div>
+      <div id="fileLoadedVenc" style="display:none" class="file-loaded">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <span id="fileLoadedNameVenc"></span>
       </div>
     </div>
-
-    <div class="card">
-      <div class="card-title">
-        <span>📱 Número de WhatsApp</span>
-        <button class="btn-clear" id="clearAllBtn">🗑 Limpar tudo</button>
+    <div id="filterPanelVenc" style="display:none">
+      <div class="card">
+        <div class="card-title"><span>📅 Filtro de período</span></div>
+        <div class="filter-bar">
+          <div class="fg"><span class="flabel">Data inicial</span><input class="finput" type="date" id="startDateVenc"></div>
+          <div class="fg"><span class="flabel">Data final</span><input class="finput" type="date" id="endDateVenc"></div>
+          <button class="filter-btn" id="applyFilterVenc">Aplicar filtro</button>
+        </div>
       </div>
-      <div class="phone-bar">
-        <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelect" style="min-width:180px"></select></div>
-        <div class="fg" id="dddContainer"><span class="flabel">DDD</span><select class="finput" id="dddSelect" style="min-width:80px"></select></div>
-        <div class="fg"><span class="flabel">Número</span><input class="finput" type="text" id="phoneNumber" placeholder="912345678" maxlength="15" style="min-width:160px"></div>
-        <button class="btn-test" id="testNumberBtn">Testar número</button>
+      <div class="card">
+        <div class="card-title"><span>📱 Número de WhatsApp</span><button class="btn-clear" id="clearAllBtnVenc">🗑 Limpar tudo</button></div>
+        <div class="phone-bar">
+          <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelectVenc" style="min-width:180px"></select></div>
+          <div class="fg" id="dddContainerVenc"><span class="flabel">DDD</span><select class="finput" id="dddSelectVenc" style="min-width:80px"></select></div>
+          <div class="fg"><span class="flabel">Número</span><input class="finput" type="text" id="phoneNumberVenc" placeholder="912345678" maxlength="15" style="min-width:160px"></div>
+          <button class="btn-test" id="testNumberBtnVenc">Testar número</button>
+        </div>
+        <div class="phone-preview" id="numeroPreviewVenc">Número final: <span>não definido</span></div>
       </div>
-      <div class="phone-preview" id="numeroPreview">Número final: <span>não definido</span></div>
     </div>
+    <div id="resultAreaVenc"></div>
   </div>
 
-  <div id="resultArea"></div>
+  <!-- ==================== ABA 2: FUNDOS DE INVESTIMENTO ==================== -->
+  <div id="tab-fundos" class="tab-pane">
+
+    <!-- Upload -->
+    <div class="card">
+      <div class="card-title"><span>📂 Planilha de Movimentações (Fundos de Investimento)</span></div>
+      <div class="upload-area" id="dropZoneFundos">
+        <div class="upload-icon">📈</div>
+        <div class="upload-label">Clique ou arraste o arquivo .xlsx</div>
+        <div class="upload-sub">Colunas esperadas: Código do Cliente · Operação · Fundo · Data da Liquidação · Valor Solicitado</div>
+        <button class="choose-btn" id="chooseFileBtnFundos">Selecionar planilha</button>
+        <input type="file" id="fileInputFundos" accept=".xlsx,.xls" style="display:none">
+      </div>
+      <div id="fileLoadedFundos" style="display:none" class="file-loaded">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <span id="fileLoadedNameFundos"></span>
+      </div>
+    </div>
+
+    <!-- Filtros (visíveis após upload) -->
+    <div id="filterPanelFundos" style="display:none">
+
+      <!-- Filtro período -->
+      <div class="card">
+        <div class="card-title"><span>📅 Filtro por data de liquidação</span></div>
+        <div class="filter-bar">
+          <div class="fg"><span class="flabel">Data inicial</span><input class="finput" type="date" id="startDateFundos"></div>
+          <div class="fg"><span class="flabel">Data final</span><input class="finput" type="date" id="endDateFundos"></div>
+          <button class="filter-btn" id="applyFilterFundos">Aplicar filtro</button>
+        </div>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="card">
+        <div class="card-title">
+          <span>📱 Número de WhatsApp</span>
+          <button class="btn-clear" id="clearAllBtnFundos">🗑 Limpar tudo</button>
+        </div>
+        <div class="phone-bar">
+          <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelectFundos" style="min-width:180px"></select></div>
+          <div class="fg" id="dddContainerFundos"><span class="flabel">DDD</span><select class="finput" id="dddSelectFundos" style="min-width:80px"></select></div>
+          <div class="fg"><span class="flabel">Número</span><input class="finput" type="text" id="phoneNumberFundos" placeholder="912345678" maxlength="15" style="min-width:160px"></div>
+          <button class="btn-test" id="testNumberBtnFundos">Testar número</button>
+        </div>
+        <div class="phone-preview" id="numeroPreviewFundos">Número final: <span>não definido</span></div>
+      </div>
+
+    </div><!-- /filterPanelFundos -->
+
+    <!-- Resultados -->
+    <div id="resultAreaFundos"></div>
+
+  </div>
 </main>
 
-<footer class="footer">💡 Clique na seta (▼) ao lado do botão WhatsApp para ver/copiar a mensagem. Clique na seta ao lado do título "Vencimento" para alternar a ordenação.</footer>
+<footer class="footer">💡 Na aba Fundos, use os filtros de operação para exibir apenas os tipos desejados (Aplicação, Resgate Parcial, Resgate Total). Clique na seta para ver a mensagem antes de enviar.</footer>
 
 <script>
-// --------------------------------------------------------------
-// 1. LISTA COMPLETA DE PAÍSES (original, com todos os códigos)
-// --------------------------------------------------------------
+// ==================== FUNÇÕES GLOBAIS (países, DDD, tema, relógio) ====================
 const countries = [
     { code: "1", name: "EUA", flag: "🇺🇸" }, { code: "7", name: "Rússia", flag: "🇷🇺" }, { code: "20", name: "Egito", flag: "🇪🇬" }, { code: "27", name: "África do Sul", flag: "🇿🇦" }, { code: "30", name: "Grécia", flag: "🇬🇷" }, { code: "31", name: "Países Baixos", flag: "🇳🇱" },
     { code: "32", name: "Bélgica", flag: "🇧🇪" }, { code: "33", name: "França", flag: "🇫🇷" }, { code: "34", name: "Espanha", flag: "🇪🇸" }, { code: "36", name: "Hungria", flag: "🇭🇺" }, { code: "39", name: "Itália", flag: "🇮🇹" }, { code: "40", name: "Romênia", flag: "🇷🇴" },
@@ -193,11 +302,6 @@ const countries = [
 ];
 const brazilDDDs = ["11","12","13","14","15","16","17","18","19","21","22","24","27","28","31","32","33","34","35","37","38","41","42","43","44","45","46","47","48","49","51","53","54","55","61","62","63","64","65","66","67","68","69","71","73","74","75","77","79","81","82","83","84","85","86","87","88","89","91","92","93","94","95","96","97","98","99"];
 
-let rawData = { renda_fixa: [], tesouro_direto: [], coe: [] };
-let currentStart = null, currentEnd = null;
-let currentOrder = 'asc';
-
-// Tema claro/escuro e relógio
 function updateClock(){
   document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
@@ -209,57 +313,61 @@ document.getElementById('themeBtn').addEventListener('click', () => {
   document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
 });
 
-// WhatsApp e país
-function populateCountrySelect() {
-    const select = document.getElementById('countrySelect');
+// Funções de telefone (genéricas)
+function populateCountrySelect(selectId) {
+    const select = document.getElementById(selectId);
     select.innerHTML = '';
     countries.forEach(c => { const opt = document.createElement('option'); opt.value = c.code; opt.textContent = `${c.flag} ${c.name} (+${c.code})`; select.appendChild(opt); });
     select.value = '55';
 }
-function getCountryCode() { return document.getElementById('countrySelect').value; }
-function populateDDDSelect() {
-    const select = document.getElementById('dddSelect');
+function getCountryCode(selectId) { return document.getElementById(selectId).value; }
+function populateDDDSelect(selectId) {
+    const select = document.getElementById(selectId);
     if (!select) return;
     select.innerHTML = '';
     brazilDDDs.forEach(ddd => { const opt = document.createElement('option'); opt.value = ddd; opt.textContent = ddd; select.appendChild(opt); });
 }
-function toggleDDDField() {
-    const container = document.getElementById('dddContainer');
-    const isBrazil = getCountryCode() === '55';
+function toggleDDDField(containerId, selectId, countrySelectId, phonePreviewFunc) {
+    const container = document.getElementById(containerId);
+    const isBrazil = getCountryCode(countrySelectId) === '55';
     if (isBrazil) {
-        container.innerHTML = `<span class="flabel">DDD</span><select class="finput" id="dddSelect" style="min-width:80px"></select>`;
-        populateDDDSelect();
-        document.getElementById('dddSelect').addEventListener('change', updatePhonePreview);
+        container.innerHTML = `<span class="flabel">DDD</span><select class="finput" id="${selectId}" style="min-width:80px"></select>`;
+        populateDDDSelect(selectId);
+        document.getElementById(selectId).addEventListener('change', phonePreviewFunc);
     } else {
-        container.innerHTML = `<span class="flabel">Código de área</span><input class="finput" type="text" id="dddInput" placeholder="ex: 11" maxlength="5" style="min-width:80px">`;
-        document.getElementById('dddInput').addEventListener('input', updatePhonePreview);
+        container.innerHTML = `<span class="flabel">Código de área</span><input class="finput" type="text" id="dddInput_${selectId}" placeholder="ex: 11" maxlength="5" style="min-width:80px">`;
+        document.getElementById(`dddInput_${selectId}`).addEventListener('input', phonePreviewFunc);
     }
-    updatePhonePreview();
+    if(phonePreviewFunc) phonePreviewFunc();
 }
-function getDDD() {
-    const isBrazil = getCountryCode() === '55';
+function getDDD(containerId, countrySelectId, dddSelectId) {
+    const isBrazil = getCountryCode(countrySelectId) === '55';
     if (isBrazil) {
-        const select = document.getElementById('dddSelect');
+        const select = document.getElementById(dddSelectId);
         return select ? select.value : '';
     } else {
-        const input = document.getElementById('dddInput');
+        const input = document.getElementById(`dddInput_${dddSelectId}`);
         return input ? input.value.replace(/\D/g, '') : '';
     }
 }
-function getFullPhoneNumber() {
-    let country = getCountryCode();
-    let ddd = getDDD();
-    let phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
+function getFullPhoneNumber(countrySelectId, dddSelectId, phoneInputId, containerId) {
+    let country = getCountryCode(countrySelectId);
+    let ddd = getDDD(containerId, countrySelectId, dddSelectId);
+    let phone = document.getElementById(phoneInputId).value.replace(/\D/g, '');
     if (!country || !ddd || !phone) return null;
     return country + ddd + phone;
 }
-function updatePhonePreview() {
-    const full = getFullPhoneNumber();
-    const preview = document.getElementById('numeroPreview');
+function updatePhonePreview(previewId, countrySelectId, dddSelectId, phoneInputId, containerId) {
+    const full = getFullPhoneNumber(countrySelectId, dddSelectId, phoneInputId, containerId);
+    const preview = document.getElementById(previewId);
     preview.innerHTML = full ? `Número final: <b>+${full}</b>` : `Número final: <span style="color:var(--amber)">incompleto</span>`;
 }
 
-// Leitura do Excel
+// ==================== MÓDULO VENCIMENTOS (original, intacto) ====================
+let rawDataVenc = { renda_fixa: [], tesouro_direto: [], coe: [] };
+let currentStartVenc = null, currentEndVenc = null;
+let currentOrderVenc = 'asc';
+
 function parseExcelDate(value) {
     if (!value) return null;
     if (value instanceof Date) return value;
@@ -278,7 +386,7 @@ function parseExcelDate(value) {
     }
     return null;
 }
-function extractFromSheet(rows, sheetName) {
+function extractFromSheetVenc(rows, sheetName) {
     if (!rows || rows.length < 2) return [];
     const headers = rows[0].map(c => c ? c.toString().trim() : '');
     let colClient = -1, colType = -1, colDue = -1;
@@ -289,19 +397,10 @@ function extractFromSheet(rows, sheetName) {
         if ((sheetName === 'renda_fixa' || sheetName === 'tesouro_direto') && h === 'markettype') colType = i;
         if (h === 'duedate') colDue = i;
     }
-    if (colClient === -1) {
-        for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('client')) { colClient = i; break; }
-    }
-    if (colType === -1 && sheetName !== 'coe') {
-        for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('market') || headers[i].toLowerCase().includes('asset')) { colType = i; break; }
-    }
-    if (colDue === -1) {
-        for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('due') || headers[i].toLowerCase().includes('venc')) { colDue = i; break; }
-    }
-    if (colClient === -1 || colDue === -1 || colType === -1) {
-        console.warn(`Aba ${sheetName}: colunas não encontradas. Client:${colClient}, Type:${colType}, Due:${colDue}`);
-        return [];
-    }
+    if (colClient === -1) for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('client')) { colClient = i; break; }
+    if (colType === -1 && sheetName !== 'coe') for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('market') || headers[i].toLowerCase().includes('asset')) { colType = i; break; }
+    if (colDue === -1) for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('due') || headers[i].toLowerCase().includes('venc')) { colDue = i; break; }
+    if (colClient === -1 || colDue === -1 || colType === -1) return [];
     const result = [];
     for (let i=1; i<rows.length; i++) {
         const row = rows[i];
@@ -318,7 +417,7 @@ function extractFromSheet(rows, sheetName) {
     }
     return result;
 }
-async function processExcel(file) {
+async function processExcelVenc(file) {
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data, { type: 'array' });
     const sheets = ['renda_fixa', 'tesouro_direto', 'coe'];
@@ -326,28 +425,28 @@ async function processExcel(file) {
         if (workbook.Sheets[name]) {
             const sheet = workbook.Sheets[name];
             const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-            rawData[name] = extractFromSheet(rows, name);
-        } else rawData[name] = [];
+            rawDataVenc[name] = extractFromSheetVenc(rows, name);
+        } else rawDataVenc[name] = [];
     }
-    document.getElementById('filterPanel').style.display = 'block';
-    document.getElementById('resultArea').style.display = 'block';
+    document.getElementById('filterPanelVenc').style.display = 'block';
+    document.getElementById('resultAreaVenc').style.display = 'block';
     const today = new Date(); today.setHours(0,0,0,0);
     const future = new Date(today); future.setDate(today.getDate() + 30);
-    document.getElementById('startDate').value = today.toISOString().split('T')[0];
-    document.getElementById('endDate').value = future.toISOString().split('T')[0];
-    currentStart = today;
-    currentEnd = future;
-    currentOrder = 'asc';
-    renderCards();
-    updatePhonePreview();
-    document.getElementById('fileLoadedName').textContent = '✓ ' + file.name + ' carregado com sucesso';
-    document.getElementById('fileLoaded').style.display = 'flex';
+    document.getElementById('startDateVenc').value = today.toISOString().split('T')[0];
+    document.getElementById('endDateVenc').value = future.toISOString().split('T')[0];
+    currentStartVenc = today;
+    currentEndVenc = future;
+    currentOrderVenc = 'asc';
+    renderCardsVenc();
+    updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
+    document.getElementById('fileLoadedNameVenc').textContent = '✓ ' + file.name + ' carregado com sucesso';
+    document.getElementById('fileLoadedVenc').style.display = 'flex';
 }
-function filterByDate(dataArray, start, end) {
+function filterByDateVenc(dataArray, start, end) {
     if (!start || !end) return dataArray;
     return dataArray.filter(item => item.dueDate >= start && item.dueDate <= end);
 }
-function getGroupedMessages(dataArray) {
+function getGroupedMessagesVenc(dataArray) {
     const groups = new Map();
     for (let item of dataArray) {
         const key = `${item.clientId}|${item.dueDateStr}`;
@@ -356,36 +455,33 @@ function getGroupedMessages(dataArray) {
     }
     return Array.from(groups.values()).map(g => ({ ...g, ativos: [...new Set(g.ativos)] }));
 }
-function gerarMensagem(group) {
+function gerarMensagemVenc(group) {
     const ativosList = group.ativos.join(', ');
     const artigo = group.ativos.length === 1 ? 'o seu ativo' : 'os seus ativos';
     return `Prezado(a) ${group.clientId}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}. Assim que o recurso for liquidado em sua conta, se não houver necessidade de resgate imediato por sua parte, faremos a análise para realocá-lo estrategicamente, mantendo o alinhamento com as metas da sua carteira e de acordo com as recomendações do nosso comitê de alocações. Estou à disposição caso queira alinhar algum ponto.`;
 }
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-
-// Ícone SVG do WhatsApp (igual ao segundo script)
 const waIcon = '<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.523 5.849L0 24l6.335-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.213-3.728.887.906-3.638-.234-.374A9.793 9.793 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>';
-
-function renderCards() {
-    const start = currentStart ? new Date(currentStart) : null;
-    const end = currentEnd ? new Date(currentEnd) : null;
+function renderCardsVenc() {
+    const start = currentStartVenc ? new Date(currentStartVenc) : null;
+    const end = currentEndVenc ? new Date(currentEndVenc) : null;
     if (start) start.setHours(0,0,0,0);
     if (end) end.setHours(0,0,0,0);
     const filtered = {
-        renda_fixa: filterByDate(rawData.renda_fixa, start, end),
-        tesouro_direto: filterByDate(rawData.tesouro_direto, start, end),
-        coe: filterByDate(rawData.coe, start, end)
+        renda_fixa: filterByDateVenc(rawDataVenc.renda_fixa, start, end),
+        tesouro_direto: filterByDateVenc(rawDataVenc.tesouro_direto, start, end),
+        coe: filterByDateVenc(rawDataVenc.coe, start, end)
     };
-    const resultDiv = document.getElementById('resultArea');
+    const resultDiv = document.getElementById('resultAreaVenc');
     resultDiv.innerHTML = '';
     const createCard = (title, icon, data, key) => {
         const card = document.createElement('div');
         card.className = 'card';
-        let grouped = getGroupedMessages(data);
+        let grouped = getGroupedMessagesVenc(data);
         grouped.sort((a,b) => {
             const dateA = new Date(a.dueDateStr.split('/').reverse().join('-'));
             const dateB = new Date(b.dueDateStr.split('/').reverse().join('-'));
-            return currentOrder === 'asc' ? dateA - dateB : dateB - dateA;
+            return currentOrderVenc === 'asc' ? dateA - dateB : dateB - dateA;
         });
         const totalMsgs = grouped.length;
         card.innerHTML = `
@@ -400,7 +496,7 @@ function renderCards() {
                             <tr>
                                 <th>Cliente</th>
                                 <th>Ativos</th>
-                                <th>Vencimento <button class="sort-icon" data-key="${key}" title="Alternar ordem">${currentOrder === 'asc' ? '🔼' : '🔽'}</button></th>
+                                <th>Vencimento <button class="sort-icon" data-key="${key}" title="Alternar ordem">${currentOrderVenc === 'asc' ? '🔼' : '🔽'}</button></th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
@@ -411,10 +507,10 @@ function renderCards() {
                                     <td>${escapeHtml(g.ativos.join(', '))}</td>
                                     <td>${g.dueDateStr}</td>
                                     <td>
-                                        <button class="btn-whats">${waIcon} Enviar para WhatsApp</button>
+                                        <button class="btn-whats">${waIcon} Enviar</button>
                                         <button class="expand-icon" data-key="${key}" data-idx="${idx}">▼</button>
-                                     </td>
-                                 </tr>
+                                    </td>
+                                </tr>
                                 <tr class="msg-row-${key}-${idx}" style="display: none;">
                                     <td colspan="4">
                                         <div class="message-preview" id="preview-${key}-${idx}"></div>
@@ -434,13 +530,13 @@ function renderCards() {
     resultDiv.appendChild(createCard('Tesouro Direto', '🏦', filtered.tesouro_direto, 'tesouro_direto'));
     resultDiv.appendChild(createCard('COE', '📊', filtered.coe, 'coe'));
 
-    document.querySelectorAll('.sort-icon').forEach(btn => {
+    document.querySelectorAll('#resultAreaVenc .sort-icon').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            currentOrder = currentOrder === 'asc' ? 'desc' : 'asc';
-            renderCards();
+            currentOrderVenc = currentOrderVenc === 'asc' ? 'desc' : 'asc';
+            renderCardsVenc();
         });
     });
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
+    document.querySelectorAll('#resultAreaVenc .toggle-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const key = btn.getAttribute('data-key');
             const container = document.querySelector(`.table-container-${key}`);
@@ -466,7 +562,7 @@ function renderCards() {
                         const dueDate = mainRow.dataset.data;
                         const ativos = JSON.parse(mainRow.dataset.ativos);
                         const group = { clientId, ativos, dueDateStr: dueDate };
-                        const mensagem = gerarMensagem(group);
+                        const mensagem = gerarMensagemVenc(group);
                         previewDiv.innerHTML = mensagem;
                         copyBtn.onclick = () => { navigator.clipboard.writeText(mensagem).then(() => alert('Mensagem copiada!')); };
                     }
@@ -483,8 +579,8 @@ function renderCards() {
                 const dueDate = mainRow.dataset.data;
                 const ativos = JSON.parse(mainRow.dataset.ativos);
                 const group = { clientId, ativos, dueDateStr: dueDate };
-                const mensagem = gerarMensagem(group);
-                const numero = getFullPhoneNumber();
+                const mensagem = gerarMensagemVenc(group);
+                const numero = getFullPhoneNumber('countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
                 if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
                 const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
                 window.open(link, '_blank');
@@ -492,59 +588,377 @@ function renderCards() {
         }
     }
 }
-
-function clearAll() {
-    rawData = { renda_fixa: [], tesouro_direto: [], coe: [] };
-    currentStart = currentEnd = null;
-    currentOrder = 'asc';
-    document.getElementById('filterPanel').style.display = 'none';
-    document.getElementById('resultArea').style.display = 'none';
-    document.getElementById('resultArea').innerHTML = '';
-    document.getElementById('fileInput').value = '';
-    document.getElementById('phoneNumber').value = '';
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    document.getElementById('countrySelect').value = '55';
-    document.getElementById('fileLoaded').style.display = 'none';
-    updatePhonePreview();
-    toggleDDDField();
+function clearAllVenc() {
+    rawDataVenc = { renda_fixa: [], tesouro_direto: [], coe: [] };
+    currentStartVenc = currentEndVenc = null;
+    currentOrderVenc = 'asc';
+    document.getElementById('filterPanelVenc').style.display = 'none';
+    document.getElementById('resultAreaVenc').style.display = 'none';
+    document.getElementById('resultAreaVenc').innerHTML = '';
+    document.getElementById('fileInputVenc').value = '';
+    document.getElementById('phoneNumberVenc').value = '';
+    document.getElementById('startDateVenc').value = '';
+    document.getElementById('endDateVenc').value = '';
+    document.getElementById('countrySelectVenc').value = '55';
+    document.getElementById('fileLoadedVenc').style.display = 'none';
+    updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
+    toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 }
-
-// Eventos e inicialização
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('fileInput');
-const chooseBtn = document.getElementById('chooseFileBtn');
-dropZone.addEventListener('click', () => fileInput.click());
-chooseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
-dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--gold)'; });
-dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
-dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.style.borderColor = '';
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) processExcel(file);
-    else alert('Arquivo .xlsx ou .xls esperado');
+// Inicialização vencimentos
+populateCountrySelect('countrySelectVenc');
+populateDDDSelect('dddSelectVenc');
+document.getElementById('applyFilterVenc').addEventListener('click', () => {
+    const startVal = document.getElementById('startDateVenc').value;
+    const endVal = document.getElementById('endDateVenc').value;
+    currentStartVenc = startVal ? new Date(startVal) : null;
+    currentEndVenc = endVal ? new Date(endVal) : null;
+    renderCardsVenc();
 });
-fileInput.addEventListener('change', () => { if (fileInput.files[0]) processExcel(fileInput.files[0]); });
-document.getElementById('applyFilter').addEventListener('click', () => {
-    const startVal = document.getElementById('startDate').value;
-    const endVal = document.getElementById('endDate').value;
-    currentStart = startVal ? new Date(startVal) : null;
-    currentEnd = endVal ? new Date(endVal) : null;
-    renderCards();
-});
-document.getElementById('testNumberBtn').addEventListener('click', () => {
-    const full = getFullPhoneNumber();
+document.getElementById('testNumberBtnVenc').addEventListener('click', () => {
+    const full = getFullPhoneNumber('countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
     alert(full ? `Número completo: +${full}` : 'Número inválido');
 });
-document.getElementById('clearAllBtn').addEventListener('click', clearAll);
-document.getElementById('countrySelect').addEventListener('change', () => { toggleDDDField(); updatePhonePreview(); });
-document.addEventListener('change', (e) => { if (e.target.id === 'dddSelect' || e.target.id === 'dddInput') updatePhonePreview(); });
-document.getElementById('phoneNumber').addEventListener('input', updatePhonePreview);
+document.getElementById('clearAllBtnVenc').addEventListener('click', clearAllVenc);
+document.getElementById('countrySelectVenc').addEventListener('change', () => { toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc')); updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'); });
+document.getElementById('phoneNumberVenc').addEventListener('input', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
+document.addEventListener('change', (e) => { if (e.target.id === 'dddSelectVenc') updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'); });
+const dropZoneVenc = document.getElementById('dropZoneVenc');
+const fileInputVenc = document.getElementById('fileInputVenc');
+const chooseBtnVenc = document.getElementById('chooseFileBtnVenc');
+dropZoneVenc.addEventListener('click', () => fileInputVenc.click());
+chooseBtnVenc.addEventListener('click', (e) => { e.stopPropagation(); fileInputVenc.click(); });
+dropZoneVenc.addEventListener('dragover', (e) => { e.preventDefault(); dropZoneVenc.style.borderColor = 'var(--gold)'; });
+dropZoneVenc.addEventListener('dragleave', () => { dropZoneVenc.style.borderColor = ''; });
+dropZoneVenc.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZoneVenc.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) processExcelVenc(file);
+    else alert('Arquivo .xlsx ou .xls esperado');
+});
+fileInputVenc.addEventListener('change', () => { if (fileInputVenc.files[0]) processExcelVenc(fileInputVenc.files[0]); });
+toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 
-populateCountrySelect();
-populateDDDSelect();
-toggleDDDField();
+// ==================== MÓDULO FUNDOS DE INVESTIMENTO (COM FILTRO GLOBAL POR OPERAÇÃO) ====================
+let rawDataFundos = []; // array de objetos: { cliente, operacao, fundo, dataLiq, valor }
+let currentStartFundos = null, currentEndFundos = null;
+let currentOrderFundos = 'asc'; // ordenação por data
+let operacaoFilter = ['Aplicação', 'Resgate Parcial', 'Resgate Total']; // padrão: todos selecionados
+
+function parseExcelDateFundos(value) {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value === 'number') {
+        let date = XLSX.SSF.parse_date_code(value);
+        if (date) return new Date(date.y, date.m-1, date.d);
+        return null;
+    }
+    let str = value.toString();
+    let parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) return parsed;
+    let parts = str.split('/');
+    if (parts.length === 3) {
+        let d = parseInt(parts[0]), m = parseInt(parts[1])-1, y = parseInt(parts[2]);
+        if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
+    }
+    return null;
+}
+function extractFromSheetFundos(rows) {
+    if (!rows || rows.length < 2) return [];
+    const headers = rows[0].map(c => c ? c.toString().trim() : '');
+    // Mapear colunas conforme o Excel real: "Código do Cliente", "Operação", "Fundo", "Data da Liquidação", "Valor Solicitado"
+    let colCliente = -1, colOperacao = -1, colFundo = -1, colDataLiq = -1, colValor = -1;
+    for (let i=0; i<headers.length; i++) {
+        let h = headers[i];
+        if (h === 'Código do Cliente' || h === 'Código do cliente' || h.toLowerCase() === 'código do cliente') colCliente = i;
+        if (h === 'Operação' || h === 'Operacao' || h.toLowerCase() === 'operação') colOperacao = i;
+        if (h === 'Fundo' || h.toLowerCase() === 'fundo') colFundo = i;
+        if (h === 'Data da Liquidação' || h === 'Data da liquidação' || h.toLowerCase().includes('liquidação')) colDataLiq = i;
+        if (h === 'Valor Solicitado' || h === 'Valor solicitado' || h.toLowerCase().includes('valor')) colValor = i;
+    }
+    // Fallbacks
+    if (colCliente === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('cliente')){colCliente=i;break;}
+    if (colOperacao === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('opera')){colOperacao=i;break;}
+    if (colFundo === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('fundo')){colFundo=i;break;}
+    if (colDataLiq === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('liquidação')){colDataLiq=i;break;}
+    if (colValor === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('valor')){colValor=i;break;}
+    
+    if (colCliente === -1 || colFundo === -1 || colDataLiq === -1) {
+        console.warn('Colunas não encontradas para fundos. Cliente:',colCliente,'Fundo:',colFundo,'Data:',colDataLiq);
+        console.warn('Headers disponíveis:', headers);
+        return [];
+    }
+    const result = [];
+    for (let i=1; i<rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length === 0) continue;
+        const cliente = row[colCliente];
+        if (!cliente || cliente === '') continue;
+        let operacao = (colOperacao !== -1 && row[colOperacao]) ? row[colOperacao].toString().trim() : '';
+        // Normalizar operação (remover espaços extras)
+        operacao = operacao.replace(/\s+/g, ' ').trim();
+        const fundo = row[colFundo];
+        if (!fundo) continue;
+        const dataRaw = row[colDataLiq];
+        const dataLiq = parseExcelDateFundos(dataRaw);
+        if (!dataLiq) continue;
+        let valor = (colValor !== -1 && row[colValor]) ? row[colValor] : '';
+        if (typeof valor === 'number') valor = valor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+        result.push({
+            cliente: cliente.toString().trim(),
+            operacao: operacao,
+            fundo: fundo.toString().trim(),
+            dataLiq: dataLiq,
+            dataLiqStr: dataLiq.toLocaleDateString('pt-BR'),
+            valor: valor
+        });
+    }
+    return result;
+}
+async function processExcelFundos(file) {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0]; // usa primeira aba
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    rawDataFundos = extractFromSheetFundos(rows);
+    document.getElementById('filterPanelFundos').style.display = 'block';
+    document.getElementById('resultAreaFundos').style.display = 'block';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const future = new Date(today); future.setDate(today.getDate() + 30);
+    document.getElementById('startDateFundos').value = today.toISOString().split('T')[0];
+    document.getElementById('endDateFundos').value = future.toISOString().split('T')[0];
+    currentStartFundos = today;
+    currentEndFundos = future;
+    currentOrderFundos = 'asc';
+    // Inicializar filtro de operação com os valores únicos encontrados
+    const uniqueOps = [...new Set(rawDataFundos.map(item => item.operacao).filter(op => op))];
+    if (uniqueOps.length > 0) operacaoFilter = [...uniqueOps]; // seleciona todas por padrão
+    renderFilterCheckboxes(uniqueOps);
+    renderCardsFundos();
+    updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
+    document.getElementById('fileLoadedNameFundos').textContent = '✓ ' + file.name + ' carregado com sucesso';
+    document.getElementById('fileLoadedFundos').style.display = 'flex';
+}
+function renderFilterCheckboxes(uniqueOps) {
+    const filterContainer = document.getElementById('filterOperacaoContainer');
+    if (!filterContainer) return;
+    filterContainer.innerHTML = '<div class="flabel">📌 Tipos de operação para exibir:</div><div class="filter-operacao"></div>';
+    const innerDiv = filterContainer.querySelector('.filter-operacao');
+    uniqueOps.forEach(op => {
+        const label = document.createElement('label');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.value = op;
+        cb.checked = operacaoFilter.includes(op);
+        cb.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                if (!operacaoFilter.includes(op)) operacaoFilter.push(op);
+            } else {
+                operacaoFilter = operacaoFilter.filter(o => o !== op);
+            }
+            renderCardsFundos();
+        });
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + op));
+        innerDiv.appendChild(label);
+    });
+}
+function filterByDateFundos(arr, start, end) {
+    if (!start || !end) return arr;
+    return arr.filter(item => item.dataLiq >= start && item.dataLiq <= end);
+}
+function gerarMensagemFundos(item) {
+    const valorFormatado = item.valor ? `R$ ${item.valor}` : 'valor informado';
+    const operacaoTexto = item.operacao || 'operação';
+    return `Prezado(a) ${item.cliente}, tudo bem? Recebemos sua solicitação de ${operacaoTexto} no fundo ${item.fundo} no valor de ${valorFormatado}, com liquidação prevista para ${item.dataLiqStr}. Estamos à disposição para qualquer esclarecimento.`;
+}
+function renderCardsFundos() {
+    const start = currentStartFundos ? new Date(currentStartFundos) : null;
+    const end = currentEndFundos ? new Date(currentEndFundos) : null;
+    if (start) start.setHours(0,0,0,0);
+    if (end) end.setHours(0,0,0,0);
+    let filtered = filterByDateFundos(rawDataFundos, start, end);
+    // Aplicar filtro de operação (global)
+    if (operacaoFilter.length > 0) {
+        filtered = filtered.filter(item => operacaoFilter.includes(item.operacao));
+    }
+    filtered.sort((a,b) => {
+        return currentOrderFundos === 'asc' ? a.dataLiq - b.dataLiq : b.dataLiq - a.dataLiq;
+    });
+    const resultDiv = document.getElementById('resultAreaFundos');
+    resultDiv.innerHTML = '';
+    if (filtered.length === 0) {
+        resultDiv.innerHTML = '<div class="card"><div class="empty-msg">Nenhuma operação encontrada no período com os filtros selecionados.</div></div>';
+        return;
+    }
+    const card = document.createElement('div');
+    card.className = 'card';
+    const total = filtered.length;
+    function opBadge(op) {
+        const low = (op||'').toLowerCase();
+        if (low.includes('aplica')) return `<span class="op-badge aplicacao">${escapeHtml(op)}</span>`;
+        if (low.includes('resgate')) return `<span class="op-badge resgate">${escapeHtml(op)}</span>`;
+        return `<span class="op-badge outros">${escapeHtml(op)}</span>`;
+    }
+    card.innerHTML = `
+        <div class="card-header">
+            <h2>📋 Movimentações de Fundos <span>(${total} registro${total!==1?'s':''})</span></h2>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button class="toggle-btn" data-key="fundos">Mostrar/Esconder</button>
+            </div>
+        </div>
+        <div id="filterOperacaoContainer"></div>
+        <div class="table-container-fundos" style="display:block;">
+            <div class="scroll-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Operação</th>
+                            <th>Fundo</th>
+                            <th>Data Liquidação <button class="sort-icon" data-key="fundos" title="Ordenar por data">${currentOrderFundos === 'asc' ? '🔼' : '🔽'}</button></th>
+                            <th>Valor Solicitado</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-fundos">
+                        ${filtered.map((item, idx) => `
+                            <tr data-cliente="${escapeHtml(item.cliente)}" data-fundo="${escapeHtml(item.fundo)}" data-data="${item.dataLiqStr}" data-valor="${escapeHtml(item.valor)}" data-operacao="${escapeHtml(item.operacao)}">
+                                <td><strong>${escapeHtml(item.cliente)}</strong></td>
+                                <td>${opBadge(item.operacao)}</td>
+                                <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(item.fundo)}">${escapeHtml(item.fundo)}</td>
+                                <td>${item.dataLiqStr}</td>
+                                <td>${item.valor ? 'R$ '+item.valor : '-'}</td>
+                                <td>
+                                    <button class="btn-whats" data-idx="${idx}">${waIcon} Enviar WhatsApp</button>
+                                    <button class="expand-icon" data-idx="${idx}">▼</button>
+                                </td>
+                            </tr>
+                            <tr class="msg-row-fundos-${idx}" style="display: none;">
+                                <td colspan="6">
+                                    <div class="message-preview" id="preview-fundos-${idx}"></div>
+                                    <button class="btn-copy" data-idx="${idx}">📄 Copiar mensagem</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    resultDiv.appendChild(card);
+    // Eventos do card
+    const toggleBtn = card.querySelector('.toggle-btn');
+    const tableContainer = card.querySelector('.table-container-fundos');
+    toggleBtn.addEventListener('click', () => {
+        tableContainer.style.display = tableContainer.style.display === 'none' ? 'block' : 'none';
+    });
+    const sortBtn = card.querySelector('.sort-icon');
+    sortBtn.addEventListener('click', () => {
+        currentOrderFundos = currentOrderFundos === 'asc' ? 'desc' : 'asc';
+        renderCardsFundos();
+    });
+    // Preencher os checkboxes de operação (já deve estar no container)
+    const uniqueOps = [...new Set(rawDataFundos.map(item => item.operacao).filter(op => op))];
+    renderFilterCheckboxes(uniqueOps);
+    // Vincular eventos de expansão e WhatsApp
+    filtered.forEach((item, idx) => {
+        const mainRow = document.querySelector(`#tbody-fundos tr[data-cliente="${escapeHtml(item.cliente)}"]`);
+        if (!mainRow) return;
+        const msgRow = document.querySelector(`.msg-row-fundos-${idx}`);
+        if (!msgRow) return;
+        const expandBtn = mainRow.querySelector('.expand-icon');
+        const whatsBtn = mainRow.querySelector('.btn-whats');
+        const copyBtn = msgRow.querySelector('.btn-copy');
+        const previewDiv = msgRow.querySelector('.message-preview');
+        expandBtn.addEventListener('click', () => {
+            if (msgRow.style.display === 'none') {
+                if (!previewDiv.innerHTML) {
+                    const mensagem = gerarMensagemFundos(item);
+                    previewDiv.innerHTML = mensagem;
+                    copyBtn.onclick = () => { navigator.clipboard.writeText(mensagem).then(() => alert('Mensagem copiada!')); };
+                }
+                msgRow.style.display = 'table-row';
+                expandBtn.textContent = '▲';
+            } else {
+                msgRow.style.display = 'none';
+                expandBtn.textContent = '▼';
+            }
+        });
+        whatsBtn.addEventListener('click', () => {
+            const mensagem = gerarMensagemFundos(item);
+            const numero = getFullPhoneNumber('countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
+            if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
+            const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+            window.open(link, '_blank');
+        });
+    });
+}
+function clearAllFundos() {
+    rawDataFundos = [];
+    currentStartFundos = currentEndFundos = null;
+    currentOrderFundos = 'asc';
+    operacaoFilter = [];
+    document.getElementById('filterPanelFundos').style.display = 'none';
+    document.getElementById('resultAreaFundos').style.display = 'none';
+    document.getElementById('resultAreaFundos').innerHTML = '';
+    document.getElementById('fileInputFundos').value = '';
+    document.getElementById('phoneNumberFundos').value = '';
+    document.getElementById('startDateFundos').value = '';
+    document.getElementById('endDateFundos').value = '';
+    document.getElementById('countrySelectFundos').value = '55';
+    document.getElementById('fileLoadedFundos').style.display = 'none';
+    updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
+    toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
+}
+// Inicialização módulo Fundos
+populateCountrySelect('countrySelectFundos');
+populateDDDSelect('dddSelectFundos');
+document.getElementById('applyFilterFundos').addEventListener('click', () => {
+    const startVal = document.getElementById('startDateFundos').value;
+    const endVal = document.getElementById('endDateFundos').value;
+    currentStartFundos = startVal ? new Date(startVal) : null;
+    currentEndFundos = endVal ? new Date(endVal) : null;
+    renderCardsFundos();
+});
+document.getElementById('testNumberBtnFundos').addEventListener('click', () => {
+    const full = getFullPhoneNumber('countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
+    alert(full ? `Número completo: +${full}` : 'Número inválido');
+});
+document.getElementById('clearAllBtnFundos').addEventListener('click', clearAllFundos);
+document.getElementById('countrySelectFundos').addEventListener('change', () => { toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos')); updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'); });
+document.getElementById('phoneNumberFundos').addEventListener('input', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
+document.addEventListener('change', (e) => { if (e.target.id === 'dddSelectFundos') updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'); });
+const dropZoneFundos = document.getElementById('dropZoneFundos');
+const fileInputFundos = document.getElementById('fileInputFundos');
+const chooseBtnFundos = document.getElementById('chooseFileBtnFundos');
+dropZoneFundos.addEventListener('click', () => fileInputFundos.click());
+chooseBtnFundos.addEventListener('click', (e) => { e.stopPropagation(); fileInputFundos.click(); });
+dropZoneFundos.addEventListener('dragover', (e) => { e.preventDefault(); dropZoneFundos.style.borderColor = 'var(--gold)'; });
+dropZoneFundos.addEventListener('dragleave', () => { dropZoneFundos.style.borderColor = ''; });
+dropZoneFundos.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZoneFundos.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) processExcelFundos(file);
+    else alert('Arquivo .xlsx ou .xls esperado');
+});
+fileInputFundos.addEventListener('change', () => { if (fileInputFundos.files[0]) processExcelFundos(fileInputFundos.files[0]); });
+toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
+
+// ==================== ABAS ====================
+const tabBtns = document.querySelectorAll('.tab-btn');
+const panes = document.querySelectorAll('.tab-pane');
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        panes.forEach(pane => pane.classList.remove('active'));
+        document.getElementById(targetId).classList.add('active');
+    });
+});
 </script>
 </body>
 </html>
