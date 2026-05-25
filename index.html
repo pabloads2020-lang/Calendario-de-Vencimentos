@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Leitor de Vencimentos + WhatsApp</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1117;--bg2:#161b25;--bg3:#1c2333;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --gold:#f5c842;--gold2:#e0a800;
+  --text:#e8eaf0;--text2:#8b93a7;--text3:#555e72;
+  --card-bg:#161b25;--card-border:rgba(255,255,255,0.07);
+  --input-bg:#1c2333;--input-border:rgba(255,255,255,0.13);
+  --green:#2ecc71;--green-bg:rgba(46,204,113,0.12);
+  --red:#e74c3c;--red-bg:rgba(231,76,60,0.12);
+  --amber:#f39c12;
+}
+body.light{
+  --bg:#f5f7fa;--bg2:#ffffff;--bg3:#eef2f5;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.12);
+  --gold:#b8860b;--gold2:#9a6e0a;
+  --text:#1a1a2e;--text2:#2d3a4e;--text3:#5a6e8a;
+  --card-bg:#ffffff;--card-border:rgba(0,0,0,0.08);
+  --input-bg:#f7f9fc;--input-border:rgba(0,0,0,0.12);
+  --green:#27ae60;--green-bg:rgba(39,174,96,0.1);
+  --red:#e74c3c;--red-bg:rgba(231,76,60,0.1);
+  --amber:#e67e22;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s}
+.header{background:var(--card-bg);border-bottom:1px solid var(--card-border);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600}
+.dot{width:28px;height:28px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#000}
+.header-right{display:flex;align-items:center;gap:.8rem}
+.hdate{font-size:12px;color:var(--text3);font-family:'Atkinson Hyperlegible',monospace;white-space:nowrap}
+.theme-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:30px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}
+.theme-btn:hover{border-color:var(--gold)}
+.main{max-width:1200px;margin:0 auto;padding:1.5rem}
+.card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:1.4rem;margin-bottom:1.5rem;transition:background .2s,border .2s}
+.card-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+/* upload */
+.upload-area{border:1px dashed var(--border2);border-radius:12px;background:var(--bg3);padding:2rem;text-align:center;cursor:pointer;transition:.2s}
+.upload-area:hover{border-color:var(--gold);background:rgba(245,200,66,.04)}
+.upload-icon{font-size:32px;margin-bottom:.7rem}
+.upload-label{font-size:14px;font-weight:600;margin-bottom:.4rem}
+.upload-sub{font-size:12px;color:var(--text3);margin-bottom:1rem}
+.choose-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:30px;padding:8px 20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.choose-btn:hover{border-color:var(--gold);color:var(--gold)}
+.file-loaded{display:flex;align-items:center;gap:8px;background:var(--green-bg);border:1px solid rgba(46,204,113,.3);border-radius:10px;padding:10px 14px;margin-top:1rem;font-size:13px;color:var(--green);font-weight:600}
+/* filtros */
+.filter-bar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:5px}
+.flabel{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:600}
+.finput{background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border .2s}
+.finput:focus{border-color:var(--gold)}
+select.finput{cursor:pointer;appearance:none;padding-right:24px}
+.filter-btn{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.4);border-radius:30px;padding:9px 20px;font-size:13px;font-weight:700;color:var(--gold);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;align-self:flex-end}
+.filter-btn:hover{background:rgba(245,200,66,.22)}
+.phone-bar{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:1rem;background:var(--bg3);border-radius:12px;margin-bottom:.8rem}
+.phone-preview{font-size:12px;color:var(--text3);font-family:'Atkinson Hyperlegible',monospace}
+.phone-preview b{color:var(--green)}
+.btn-test{background:var(--bg3);border:1px solid var(--border2);border-radius:30px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-test:hover{border-color:var(--gold);color:var(--gold)}
+.btn-clear{background:var(--red-bg);border:1px solid rgba(231,76,60,.3);border-radius:30px;padding:8px 16px;font-size:12px;font-weight:700;color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-clear:hover{background:rgba(231,76,60,.22)}
+/* tabelas e cards */
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.card-header h2{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--gold)}
+.card-header h2 span{font-size:0.7rem;color:var(--text3);font-weight:400}
+.toggle-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;transition:all .2s}
+.toggle-btn:hover{border-color:var(--gold);color:var(--gold)}
+.scroll-table{overflow-x:auto;max-height:480px;overflow-y:auto;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg3);color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;padding:10px 12px;text-align:left;position:sticky;top:0;z-index:1;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+tr:last-child td{border-bottom:none}
+.empty-msg{padding:2rem;text-align:center;color:var(--text3);font-size:13px}
+.btn-whats{display:inline-flex;align-items:center;gap:6px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.35);border-radius:30px;padding:6px 14px;font-size:12px;font-weight:700;color:#25D366;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.btn-whats:hover{background:rgba(37,211,102,.18);border-color:rgba(37,211,102,.65);transform:translateY(-1px)}
+.expand-icon{background:transparent;border:1px solid var(--border2);border-radius:20px;padding:5px 9px;font-size:11px;color:var(--text3);cursor:pointer;transition:all .2s;margin-left:6px}
+.expand-icon:hover{border-color:var(--gold);color:var(--gold)}
+.sort-icon{background:none;border:none;cursor:pointer;padding:2px 6px;font-size:13px;color:var(--gold);margin-left:4px;vertical-align:middle;border-radius:4px;transition:background .2s;font-family:'Atkinson Hyperlegible',monospace;font-weight:700}
+.sort-icon:hover{background:rgba(245,200,66,.1)}
+.btn-copy{display:inline-flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;margin-top:8px;font-family:'DM Sans',sans-serif}
+.btn-copy:hover{border-color:var(--gold);color:var(--gold)}
+.message-preview{background:var(--bg3);border-left:3px solid var(--gold);padding:12px;margin:8px 0;border-radius:12px;font-size:0.75rem;white-space:pre-wrap;word-break:break-word;color:var(--text2);line-height:1.5}
+.footer{text-align:center;font-size:11px;color:var(--text3);padding:1.5rem;border-top:1px solid var(--border);margin-top:1rem}
+@media(max-width:640px){.main{padding:1rem}.phone-bar{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">
+    <div class="dot">PBF</div>
+    Calendário de Vencimentos · WhatsApp
+  </div>
+  <div class="header-right">
+    <div class="hdate" id="hDate"></div>
+    <button class="theme-btn" id="themeBtn">🌙</button>
+  </div>
+</header>
+
+<main class="main">
+  <div class="card">
+    <div class="card-title"><span>📂 Planilha de vencimentos</span></div>
+    <div class="upload-area" id="dropZone">
+      <div class="upload-icon">📊</div>
+      <div class="upload-label">Clique ou arraste o arquivo .xlsx</div>
+      <div class="upload-sub">Abas esperadas: renda_fixa · tesouro_direto · coe</div>
+      <button class="choose-btn" id="chooseFileBtn">Selecionar planilha</button>
+      <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none">
+    </div>
+    <div id="fileLoaded" style="display:none" class="file-loaded">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      <span id="fileLoadedName"></span>
+    </div>
+  </div>
+
+  <div id="filterPanel" style="display:none">
+    <div class="card">
+      <div class="card-title"><span>📅 Filtro de período</span></div>
+      <div class="filter-bar">
+        <div class="fg"><span class="flabel">Data inicial</span><input class="finput" type="date" id="startDate"></div>
+        <div class="fg"><span class="flabel">Data final</span><input class="finput" type="date" id="endDate"></div>
+        <button class="filter-btn" id="applyFilter">Aplicar filtro</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📱 Número de WhatsApp</span>
+        <button class="btn-clear" id="clearAllBtn">🗑 Limpar tudo</button>
+      </div>
+      <div class="phone-bar">
+        <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelect" style="min-width:180px"></select></div>
+        <div class="fg" id="dddContainer"><span class="flabel">DDD</span><select class="finput" id="dddSelect" style="min-width:80px"></select></div>
+        <div class="fg"><span class="flabel">Número</span><input class="finput" type="text" id="phoneNumber" placeholder="912345678" maxlength="15" style="min-width:160px"></div>
+        <button class="btn-test" id="testNumberBtn">Testar número</button>
+      </div>
+      <div class="phone-preview" id="numeroPreview">Número final: <span>não definido</span></div>
+    </div>
+  </div>
+
+  <div id="resultArea"></div>
+</main>
+
+<footer class="footer">💡 Clique na seta (▼) ao lado do botão WhatsApp para ver/copiar a mensagem. Clique na seta ao lado do título "Vencimento" para alternar a ordenação.</footer>
+
+<script>
+// --------------------------------------------------------------
+// 1. LISTA COMPLETA DE PAÍSES (original, com todos os códigos)
+// --------------------------------------------------------------
+const countries = [
+    { code: "1", name: "EUA", flag: "🇺🇸" }, { code: "7", name: "Rússia", flag: "🇷🇺" }, { code: "20", name: "Egito", flag: "🇪🇬" }, { code: "27", name: "África do Sul", flag: "🇿🇦" }, { code: "30", name: "Grécia", flag: "🇬🇷" }, { code: "31", name: "Países Baixos", flag: "🇳🇱" },
+    { code: "32", name: "Bélgica", flag: "🇧🇪" }, { code: "33", name: "França", flag: "🇫🇷" }, { code: "34", name: "Espanha", flag: "🇪🇸" }, { code: "36", name: "Hungria", flag: "🇭🇺" }, { code: "39", name: "Itália", flag: "🇮🇹" }, { code: "40", name: "Romênia", flag: "🇷🇴" },
+    { code: "41", name: "Suíça", flag: "🇨🇭" }, { code: "43", name: "Áustria", flag: "🇦🇹" }, { code: "44", name: "Reino Unido", flag: "🇬🇧" }, { code: "45", name: "Dinamarca", flag: "🇩🇰" }, { code: "46", name: "Suécia", flag: "🇸🇪" }, { code: "47", name: "Noruega", flag: "🇳🇴" },
+    { code: "48", name: "Polônia", flag: "🇵🇱" }, { code: "49", name: "Alemanha", flag: "🇩🇪" }, { code: "51", name: "Peru", flag: "🇵🇪" }, { code: "52", name: "México", flag: "🇲🇽" }, { code: "53", name: "Cuba", flag: "🇨🇺" }, { code: "54", name: "Argentina", flag: "🇦🇷" },
+    { code: "55", name: "Brasil", flag: "🇧🇷" }, { code: "56", name: "Chile", flag: "🇨🇱" }, { code: "57", name: "Colômbia", flag: "🇨🇴" }, { code: "58", name: "Venezuela", flag: "🇻🇪" }, { code: "60", name: "Malásia", flag: "🇲🇾" }, { code: "61", name: "Austrália", flag: "🇦🇺" },
+    { code: "62", name: "Indonésia", flag: "🇮🇩" }, { code: "63", name: "Filipinas", flag: "🇵🇭" }, { code: "64", name: "Nova Zelândia", flag: "🇳🇿" }, { code: "65", name: "Singapura", flag: "🇸🇬" }, { code: "66", name: "Tailândia", flag: "🇹🇭" }, { code: "81", name: "Japão", flag: "🇯🇵" },
+    { code: "82", name: "Coreia do Sul", flag: "🇰🇷" }, { code: "84", name: "Vietnã", flag: "🇻🇳" }, { code: "86", name: "China", flag: "🇨🇳" }, { code: "90", name: "Turquia", flag: "🇹🇷" }, { code: "91", name: "Índia", flag: "🇮🇳" }, { code: "92", name: "Paquistão", flag: "🇵🇰" },
+    { code: "93", name: "Afeganistão", flag: "🇦🇫" }, { code: "94", name: "Sri Lanka", flag: "🇱🇰" }, { code: "95", name: "Myanmar", flag: "🇲🇲" }, { code: "98", name: "Irã", flag: "🇮🇷" }, { code: "211", name: "Sudão", flag: "🇸🇩" }, { code: "212", name: "Marrocos", flag: "🇲🇦" },
+    { code: "213", name: "Argélia", flag: "🇩🇿" }, { code: "216", name: "Tunísia", flag: "🇹🇳" }, { code: "218", name: "Líbia", flag: "🇱🇾" }, { code: "220", name: "Gâmbia", flag: "🇬🇲" }, { code: "221", name: "Senegal", flag: "🇸🇳" }, { code: "222", name: "Mauritânia", flag: "🇲🇷" },
+    { code: "223", name: "Mali", flag: "🇲🇱" }, { code: "224", name: "Guiné", flag: "🇬🇳" }, { code: "225", name: "Costa do Marfim", flag: "🇨🇮" }, { code: "226", name: "Burkina Faso", flag: "🇧🇫" }, { code: "227", name: "Níger", flag: "🇳🇪" }, { code: "228", name: "Togo", flag: "🇹🇬" },
+    { code: "229", name: "Benin", flag: "🇧🇯" }, { code: "230", name: "Maurício", flag: "🇲🇺" }, { code: "231", name: "Libéria", flag: "🇱🇷" }, { code: "232", name: "Serra Leoa", flag: "🇸🇱" }, { code: "233", name: "Gana", flag: "🇬🇭" }, { code: "234", name: "Nigéria", flag: "🇳🇬" },
+    { code: "235", name: "Chade", flag: "🇹🇩" }, { code: "236", name: "República Centro-Africana", flag: "🇨🇫" }, { code: "237", name: "Camarões", flag: "🇨🇲" }, { code: "238", name: "Cabo Verde", flag: "🇨🇻" }, { code: "239", name: "São Tomé e Príncipe", flag: "🇸🇹" }, { code: "240", name: "Guiné Equatorial", flag: "🇬🇶" },
+    { code: "241", name: "Gabão", flag: "🇬🇦" }, { code: "242", name: "República do Congo", flag: "🇨🇬" }, { code: "243", name: "República Democrática do Congo", flag: "🇨🇩" }, { code: "244", name: "Angola", flag: "🇦🇴" }, { code: "245", name: "Guiné-Bissau", flag: "🇬🇼" }, { code: "246", name: "Diego Garcia", flag: "🇩🇬" },
+    { code: "248", name: "Seychelles", flag: "🇸🇨" }, { code: "249", name: "Sudão do Sul", flag: "🇸🇸" }, { code: "250", name: "Ruanda", flag: "🇷🇼" }, { code: "251", name: "Etiópia", flag: "🇪🇹" }, { code: "252", name: "Somália", flag: "🇸🇴" }, { code: "253", name: "Djibouti", flag: "🇩🇯" },
+    { code: "254", name: "Quênia", flag: "🇰🇪" }, { code: "255", name: "Tanzânia", flag: "🇹🇿" }, { code: "256", name: "Uganda", flag: "🇺🇬" }, { code: "257", name: "Burundi", flag: "🇧🇮" }, { code: "258", name: "Moçambique", flag: "🇲🇿" }, { code: "260", name: "Zâmbia", flag: "🇿🇲" },
+    { code: "261", name: "Madagascar", flag: "🇲🇬" }, { code: "262", name: "Reunião", flag: "🇷🇪" }, { code: "263", name: "Zimbábue", flag: "🇿🇼" }, { code: "264", name: "Namíbia", flag: "🇳🇦" }, { code: "265", name: "Malawi", flag: "🇲🇼" }, { code: "266", name: "Lesoto", flag: "🇱🇸" },
+    { code: "267", name: "Botswana", flag: "🇧🇼" }, { code: "268", name: "Suazilândia", flag: "🇸🇿" }, { code: "269", name: "Comores", flag: "🇰🇲" }, { code: "290", name: "Santa Helena", flag: "🇸🇭" }, { code: "291", name: "Eritreia", flag: "🇪🇷" }, { code: "297", name: "Aruba", flag: "🇦🇼" },
+    { code: "298", name: "Ilhas Faroé", flag: "🇫🇴" }, { code: "299", name: "Groenlândia", flag: "🇬🇱" }, { code: "350", name: "Gibraltar", flag: "🇬🇮" }, { code: "351", name: "Portugal", flag: "🇵🇹" }, { code: "352", name: "Luxemburgo", flag: "🇱🇺" }, { code: "353", name: "Irlanda", flag: "🇮🇪" },
+    { code: "354", name: "Islândia", flag: "🇮🇸" }, { code: "355", name: "Albânia", flag: "🇦🇱" }, { code: "356", name: "Malta", flag: "🇲🇹" }, { code: "357", name: "Chipre", flag: "🇨🇾" }, { code: "358", name: "Finlândia", flag: "🇫🇮" }, { code: "359", name: "Bulgária", flag: "🇧🇬" },
+    { code: "370", name: "Lituânia", flag: "🇱🇹" }, { code: "371", name: "Letônia", flag: "🇱🇻" }, { code: "372", name: "Estônia", flag: "🇪🇪" }, { code: "373", name: "Moldávia", flag: "🇲🇩" }, { code: "374", name: "Armênia", flag: "🇦🇲" }, { code: "375", name: "Bielorrússia", flag: "🇧🇾" },
+    { code: "376", name: "Andorra", flag: "🇦🇩" }, { code: "377", name: "Mônaco", flag: "🇲🇨" }, { code: "378", name: "San Marino", flag: "🇸🇲" }, { code: "379", name: "Vaticano", flag: "🇻🇦" }, { code: "380", name: "Ucrânia", flag: "🇺🇦" }, { code: "381", name: "Sérvia", flag: "🇷🇸" },
+    { code: "382", name: "Montenegro", flag: "🇲🇪" }, { code: "383", name: "Kosovo", flag: "🇽🇰" }, { code: "385", name: "Croácia", flag: "🇭🇷" }, { code: "386", name: "Eslovênia", flag: "🇸🇮" }, { code: "387", name: "Bósnia e Herzegovina", flag: "🇧🇦" }, { code: "389", name: "Macedônia do Norte", flag: "🇲🇰" },
+    { code: "420", name: "República Tcheca", flag: "🇨🇿" }, { code: "421", name: "Eslováquia", flag: "🇸🇰" }, { code: "423", name: "Liechtenstein", flag: "🇱🇮" }, { code: "500", name: "Ilhas Malvinas", flag: "🇫🇰" }, { code: "501", name: "Belize", flag: "🇧🇿" }, { code: "502", name: "Guatemala", flag: "🇬🇹" },
+    { code: "503", name: "El Salvador", flag: "🇸🇻" }, { code: "504", name: "Honduras", flag: "🇭🇳" }, { code: "505", name: "Nicarágua", flag: "🇳🇮" }, { code: "506", name: "Costa Rica", flag: "🇨🇷" }, { code: "507", name: "Panamá", flag: "🇵🇦" }, { code: "508", name: "Saint Pierre", flag: "🇵🇲" },
+    { code: "509", name: "Haiti", flag: "🇭🇹" }, { code: "590", name: "Guadalupe", flag: "🇬🇵" }, { code: "591", name: "Bolívia", flag: "🇧🇴" }, { code: "592", name: "Guiana", flag: "🇬🇾" }, { code: "593", name: "Equador", flag: "🇪🇨" }, { code: "594", name: "Guiana Francesa", flag: "🇬🇫" },
+    { code: "595", name: "Paraguai", flag: "🇵🇾" }, { code: "596", name: "Martinica", flag: "🇲🇶" }, { code: "597", name: "Suriname", flag: "🇸🇷" }, { code: "598", name: "Uruguai", flag: "🇺🇾" }, { code: "599", name: "Curaçao", flag: "🇨🇼" }, { code: "670", name: "Timor-Leste", flag: "🇹🇱" },
+    { code: "672", name: "Antártida", flag: "🇦🇶" }, { code: "673", name: "Brunei", flag: "🇧🇳" }, { code: "674", name: "Nauru", flag: "🇳🇷" }, { code: "675", name: "Papua Nova Guiné", flag: "🇵🇬" }, { code: "676", name: "Tonga", flag: "🇹🇴" }, { code: "677", name: "Ilhas Salomão", flag: "🇸🇧" },
+    { code: "678", name: "Vanuatu", flag: "🇻🇺" }, { code: "679", name: "Fiji", flag: "🇫🇯" }, { code: "680", name: "Palau", flag: "🇵🇼" }, { code: "681", name: "Wallis", flag: "🇼🇫" }, { code: "682", name: "Ilhas Cook", flag: "🇨🇰" }, { code: "683", name: "Niue", flag: "🇳🇺" },
+    { code: "684", name: "Samoa Americana", flag: "🇦🇸" }, { code: "685", name: "Samoa", flag: "🇼🇸" }, { code: "686", name: "Kiribati", flag: "🇰🇮" }, { code: "687", name: "Nova Caledônia", flag: "🇳🇨" }, { code: "688", name: "Tuvalu", flag: "🇹🇻" }, { code: "689", name: "Polinésia Francesa", flag: "🇵🇫" },
+    { code: "690", name: "Tokelau", flag: "🇹🇰" }, { code: "691", name: "Micronésia", flag: "🇫🇲" }, { code: "692", name: "Ilhas Marshall", flag: "🇲🇭" }, { code: "850", name: "Coreia do Norte", flag: "🇰🇵" }, { code: "852", name: "Hong Kong", flag: "🇭🇰" }, { code: "853", name: "Macau", flag: "🇲🇴" },
+    { code: "855", name: "Camboja", flag: "🇰🇭" }, { code: "856", name: "Laos", flag: "🇱🇦" }, { code: "880", name: "Bangladesh", flag: "🇧🇩" }, { code: "886", name: "Taiwan", flag: "🇹🇼" }, { code: "960", name: "Maldivas", flag: "🇲🇻" }, { code: "961", name: "Líbano", flag: "🇱🇧" },
+    { code: "962", name: "Jordânia", flag: "🇯🇴" }, { code: "963", name: "Síria", flag: "🇸🇾" }, { code: "964", name: "Iraque", flag: "🇮🇶" }, { code: "965", name: "Kuwait", flag: "🇰🇼" }, { code: "966", name: "Arábia Saudita", flag: "🇸🇦" }, { code: "967", name: "Iêmen", flag: "🇾🇪" },
+    { code: "968", name: "Omã", flag: "🇴🇲" }, { code: "969", name: "Iêmen", flag: "🇾🇪" }, { code: "970", name: "Palestina", flag: "🇵🇸" }, { code: "971", name: "Emirados Árabes", flag: "🇦🇪" }, { code: "972", name: "Israel", flag: "🇮🇱" }, { code: "973", name: "Bahrein", flag: "🇧🇭" },
+    { code: "974", name: "Catar", flag: "🇶🇦" }, { code: "975", name: "Butão", flag: "🇧🇹" }, { code: "976", name: "Mongólia", flag: "🇲🇳" }, { code: "977", name: "Nepal", flag: "🇳🇵" }, { code: "992", name: "Tadjiquistão", flag: "🇹🇯" }, { code: "993", name: "Turcomenistão", flag: "🇹🇲" },
+    { code: "994", name: "Azerbaijão", flag: "🇦🇿" }, { code: "995", name: "Geórgia", flag: "🇬🇪" }, { code: "996", name: "Quirguistão", flag: "🇰🇬" }, { code: "998", name: "Uzbequistão", flag: "🇺🇿" }
+];
+const brazilDDDs = ["11","12","13","14","15","16","17","18","19","21","22","24","27","28","31","32","33","34","35","37","38","41","42","43","44","45","46","47","48","49","51","53","54","55","61","62","63","64","65","66","67","68","69","71","73","74","75","77","79","81","82","83","84","85","86","87","88","89","91","92","93","94","95","96","97","98","99"];
+
+let rawData = { renda_fixa: [], tesouro_direto: [], coe: [] };
+let currentStart = null, currentEnd = null;
+let currentOrder = 'asc';
+
+// Tema claro/escuro e relógio
+function updateClock(){
+  document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+updateClock(); setInterval(updateClock, 1000);
+let isDark = true;
+document.getElementById('themeBtn').addEventListener('click', () => {
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+});
+
+// WhatsApp e país
+function populateCountrySelect() {
+    const select = document.getElementById('countrySelect');
+    select.innerHTML = '';
+    countries.forEach(c => { const opt = document.createElement('option'); opt.value = c.code; opt.textContent = `${c.flag} ${c.name} (+${c.code})`; select.appendChild(opt); });
+    select.value = '55';
+}
+function getCountryCode() { return document.getElementById('countrySelect').value; }
+function populateDDDSelect() {
+    const select = document.getElementById('dddSelect');
+    if (!select) return;
+    select.innerHTML = '';
+    brazilDDDs.forEach(ddd => { const opt = document.createElement('option'); opt.value = ddd; opt.textContent = ddd; select.appendChild(opt); });
+}
+function toggleDDDField() {
+    const container = document.getElementById('dddContainer');
+    const isBrazil = getCountryCode() === '55';
+    if (isBrazil) {
+        container.innerHTML = `<span class="flabel">DDD</span><select class="finput" id="dddSelect" style="min-width:80px"></select>`;
+        populateDDDSelect();
+        document.getElementById('dddSelect').addEventListener('change', updatePhonePreview);
+    } else {
+        container.innerHTML = `<span class="flabel">Código de área</span><input class="finput" type="text" id="dddInput" placeholder="ex: 11" maxlength="5" style="min-width:80px">`;
+        document.getElementById('dddInput').addEventListener('input', updatePhonePreview);
+    }
+    updatePhonePreview();
+}
+function getDDD() {
+    const isBrazil = getCountryCode() === '55';
+    if (isBrazil) {
+        const select = document.getElementById('dddSelect');
+        return select ? select.value : '';
+    } else {
+        const input = document.getElementById('dddInput');
+        return input ? input.value.replace(/\D/g, '') : '';
+    }
+}
+function getFullPhoneNumber() {
+    let country = getCountryCode();
+    let ddd = getDDD();
+    let phone = document.getElementById('phoneNumber').value.replace(/\D/g, '');
+    if (!country || !ddd || !phone) return null;
+    return country + ddd + phone;
+}
+function updatePhonePreview() {
+    const full = getFullPhoneNumber();
+    const preview = document.getElementById('numeroPreview');
+    preview.innerHTML = full ? `Número final: <b>+${full}</b>` : `Número final: <span style="color:var(--amber)">incompleto</span>`;
+}
+
+// Leitura do Excel
+function parseExcelDate(value) {
+    if (!value) return null;
+    if (value instanceof Date) return value;
+    if (typeof value === 'number') {
+        let date = XLSX.SSF.parse_date_code(value);
+        if (date) return new Date(date.y, date.m-1, date.d);
+        return null;
+    }
+    let str = value.toString();
+    let parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) return parsed;
+    let parts = str.split('/');
+    if (parts.length === 3) {
+        let d = parseInt(parts[0]), m = parseInt(parts[1])-1, y = parseInt(parts[2]);
+        if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
+    }
+    return null;
+}
+function extractFromSheet(rows, sheetName) {
+    if (!rows || rows.length < 2) return [];
+    const headers = rows[0].map(c => c ? c.toString().trim() : '');
+    let colClient = -1, colType = -1, colDue = -1;
+    for (let i=0; i<headers.length; i++) {
+        let h = headers[i].toLowerCase();
+        if (h === 'clientid') colClient = i;
+        if (sheetName === 'coe' && h === 'asset') colType = i;
+        if ((sheetName === 'renda_fixa' || sheetName === 'tesouro_direto') && h === 'markettype') colType = i;
+        if (h === 'duedate') colDue = i;
+    }
+    if (colClient === -1) {
+        for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('client')) { colClient = i; break; }
+    }
+    if (colType === -1 && sheetName !== 'coe') {
+        for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('market') || headers[i].toLowerCase().includes('asset')) { colType = i; break; }
+    }
+    if (colDue === -1) {
+        for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('due') || headers[i].toLowerCase().includes('venc')) { colDue = i; break; }
+    }
+    if (colClient === -1 || colDue === -1 || colType === -1) {
+        console.warn(`Aba ${sheetName}: colunas não encontradas. Client:${colClient}, Type:${colType}, Due:${colDue}`);
+        return [];
+    }
+    const result = [];
+    for (let i=1; i<rows.length; i++) {
+        const row = rows[i];
+        if (!row || row.length === 0) continue;
+        const client = row[colClient];
+        if (client === undefined || client === null || client === '') continue;
+        const type = row[colType];
+        if (!type) continue;
+        const dueRaw = row[colDue];
+        if (!dueRaw) continue;
+        const dueDate = parseExcelDate(dueRaw);
+        if (!dueDate) continue;
+        result.push({ clientId: client.toString(), type: type.toString(), dueDate: dueDate, dueDateStr: dueDate.toLocaleDateString('pt-BR') });
+    }
+    return result;
+}
+async function processExcel(file) {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheets = ['renda_fixa', 'tesouro_direto', 'coe'];
+    for (let name of sheets) {
+        if (workbook.Sheets[name]) {
+            const sheet = workbook.Sheets[name];
+            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+            rawData[name] = extractFromSheet(rows, name);
+        } else rawData[name] = [];
+    }
+    document.getElementById('filterPanel').style.display = 'block';
+    document.getElementById('resultArea').style.display = 'block';
+    const today = new Date(); today.setHours(0,0,0,0);
+    const future = new Date(today); future.setDate(today.getDate() + 30);
+    document.getElementById('startDate').value = today.toISOString().split('T')[0];
+    document.getElementById('endDate').value = future.toISOString().split('T')[0];
+    currentStart = today;
+    currentEnd = future;
+    currentOrder = 'asc';
+    renderCards();
+    updatePhonePreview();
+    document.getElementById('fileLoadedName').textContent = '✓ ' + file.name + ' carregado com sucesso';
+    document.getElementById('fileLoaded').style.display = 'flex';
+}
+function filterByDate(dataArray, start, end) {
+    if (!start || !end) return dataArray;
+    return dataArray.filter(item => item.dueDate >= start && item.dueDate <= end);
+}
+function getGroupedMessages(dataArray) {
+    const groups = new Map();
+    for (let item of dataArray) {
+        const key = `${item.clientId}|${item.dueDateStr}`;
+        if (!groups.has(key)) groups.set(key, { clientId: item.clientId, dueDateStr: item.dueDateStr, dueDateObj: item.dueDate, ativos: [] });
+        groups.get(key).ativos.push(item.type);
+    }
+    return Array.from(groups.values()).map(g => ({ ...g, ativos: [...new Set(g.ativos)] }));
+}
+function gerarMensagem(group) {
+    const ativosList = group.ativos.join(', ');
+    const artigo = group.ativos.length === 1 ? 'o seu ativo' : 'os seus ativos';
+    return `Prezado(a) ${group.clientId}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}. Assim que o recurso for liquidado em sua conta, se não houver necessidade de resgate imediato por sua parte, faremos a análise para realocá-lo estrategicamente, mantendo o alinhamento com as metas da sua carteira e de acordo com as recomendações do nosso comitê de alocações. Estou à disposição caso queira alinhar algum ponto.`;
+}
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+
+// Ícone SVG do WhatsApp (igual ao segundo script)
+const waIcon = '<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.523 5.849L0 24l6.335-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.213-3.728.887.906-3.638-.234-.374A9.793 9.793 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>';
+
+function renderCards() {
+    const start = currentStart ? new Date(currentStart) : null;
+    const end = currentEnd ? new Date(currentEnd) : null;
+    if (start) start.setHours(0,0,0,0);
+    if (end) end.setHours(0,0,0,0);
+    const filtered = {
+        renda_fixa: filterByDate(rawData.renda_fixa, start, end),
+        tesouro_direto: filterByDate(rawData.tesouro_direto, start, end),
+        coe: filterByDate(rawData.coe, start, end)
+    };
+    const resultDiv = document.getElementById('resultArea');
+    resultDiv.innerHTML = '';
+    const createCard = (title, icon, data, key) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        let grouped = getGroupedMessages(data);
+        grouped.sort((a,b) => {
+            const dateA = new Date(a.dueDateStr.split('/').reverse().join('-'));
+            const dateB = new Date(b.dueDateStr.split('/').reverse().join('-'));
+            return currentOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+        const totalMsgs = grouped.length;
+        card.innerHTML = `
+            <div class="card-header">
+                <h2>${icon} ${title} <span>(${totalMsgs} mensagens)</span></h2>
+                <button class="toggle-btn" data-key="${key}">Mostrar/Esconder</button>
+            </div>
+            <div class="table-container-${key}" style="display:block;">
+                <div class="scroll-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Ativos</th>
+                                <th>Vencimento <button class="sort-icon" data-key="${key}" title="Alternar ordem">${currentOrder === 'asc' ? '🔼' : '🔽'}</button></th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-${key}">
+                            ${grouped.map((g, idx) => `
+                                <tr data-client="${escapeHtml(g.clientId)}" data-data="${g.dueDateStr}" data-ativos='${JSON.stringify(g.ativos)}'>
+                                    <td><strong>${escapeHtml(g.clientId)}</strong></td>
+                                    <td>${escapeHtml(g.ativos.join(', '))}</td>
+                                    <td>${g.dueDateStr}</td>
+                                    <td>
+                                        <button class="btn-whats">${waIcon} Enviar para WhatsApp</button>
+                                        <button class="expand-icon" data-key="${key}" data-idx="${idx}">▼</button>
+                                     </td>
+                                 </tr>
+                                <tr class="msg-row-${key}-${idx}" style="display: none;">
+                                    <td colspan="4">
+                                        <div class="message-preview" id="preview-${key}-${idx}"></div>
+                                        <button class="btn-copy" data-key="${key}" data-idx="${idx}">📄 Copiar mensagem</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        if (grouped.length === 0) card.querySelector('.scroll-table').innerHTML = '<div class="empty-msg">Nenhum vencimento no período.</div>';
+        return card;
+    };
+    resultDiv.appendChild(createCard('Renda Fixa', '📈', filtered.renda_fixa, 'renda_fixa'));
+    resultDiv.appendChild(createCard('Tesouro Direto', '🏦', filtered.tesouro_direto, 'tesouro_direto'));
+    resultDiv.appendChild(createCard('COE', '📊', filtered.coe, 'coe'));
+
+    document.querySelectorAll('.sort-icon').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+            renderCards();
+        });
+    });
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const key = btn.getAttribute('data-key');
+            const container = document.querySelector(`.table-container-${key}`);
+            if (container) container.style.display = container.style.display === 'none' ? 'block' : 'none';
+        });
+    });
+    for (let key of ['renda_fixa', 'tesouro_direto', 'coe']) {
+        const tbody = document.getElementById(`tbody-${key}`);
+        if (!tbody) continue;
+        const rows = tbody.querySelectorAll('tr');
+        for (let i = 0; i < rows.length; i += 2) {
+            const mainRow = rows[i];
+            const msgRow = rows[i+1];
+            if (!mainRow || !msgRow) continue;
+            const expandBtn = mainRow.querySelector('.expand-icon');
+            const idx = expandBtn.getAttribute('data-idx');
+            const copyBtn = msgRow.querySelector('.btn-copy');
+            const previewDiv = msgRow.querySelector('.message-preview');
+            expandBtn.addEventListener('click', (e) => {
+                if (msgRow.style.display === 'none') {
+                    if (!previewDiv.innerHTML) {
+                        const clientId = mainRow.dataset.client;
+                        const dueDate = mainRow.dataset.data;
+                        const ativos = JSON.parse(mainRow.dataset.ativos);
+                        const group = { clientId, ativos, dueDateStr: dueDate };
+                        const mensagem = gerarMensagem(group);
+                        previewDiv.innerHTML = mensagem;
+                        copyBtn.onclick = () => { navigator.clipboard.writeText(mensagem).then(() => alert('Mensagem copiada!')); };
+                    }
+                    msgRow.style.display = 'table-row';
+                    expandBtn.textContent = '▲';
+                } else {
+                    msgRow.style.display = 'none';
+                    expandBtn.textContent = '▼';
+                }
+            });
+            const whatsBtn = mainRow.querySelector('.btn-whats');
+            whatsBtn.addEventListener('click', () => {
+                const clientId = mainRow.dataset.client;
+                const dueDate = mainRow.dataset.data;
+                const ativos = JSON.parse(mainRow.dataset.ativos);
+                const group = { clientId, ativos, dueDateStr: dueDate };
+                const mensagem = gerarMensagem(group);
+                const numero = getFullPhoneNumber();
+                if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
+                const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+                window.open(link, '_blank');
+            });
+        }
+    }
+}
+
+function clearAll() {
+    rawData = { renda_fixa: [], tesouro_direto: [], coe: [] };
+    currentStart = currentEnd = null;
+    currentOrder = 'asc';
+    document.getElementById('filterPanel').style.display = 'none';
+    document.getElementById('resultArea').style.display = 'none';
+    document.getElementById('resultArea').innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('phoneNumber').value = '';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    document.getElementById('countrySelect').value = '55';
+    document.getElementById('fileLoaded').style.display = 'none';
+    updatePhonePreview();
+    toggleDDDField();
+}
+
+// Eventos e inicialização
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const chooseBtn = document.getElementById('chooseFileBtn');
+dropZone.addEventListener('click', () => fileInput.click());
+chooseBtn.addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = 'var(--gold)'; });
+dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = ''; });
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) processExcel(file);
+    else alert('Arquivo .xlsx ou .xls esperado');
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) processExcel(fileInput.files[0]); });
+document.getElementById('applyFilter').addEventListener('click', () => {
+    const startVal = document.getElementById('startDate').value;
+    const endVal = document.getElementById('endDate').value;
+    currentStart = startVal ? new Date(startVal) : null;
+    currentEnd = endVal ? new Date(endVal) : null;
+    renderCards();
+});
+document.getElementById('testNumberBtn').addEventListener('click', () => {
+    const full = getFullPhoneNumber();
+    alert(full ? `Número completo: +${full}` : 'Número inválido');
+});
+document.getElementById('clearAllBtn').addEventListener('click', clearAll);
+document.getElementById('countrySelect').addEventListener('change', () => { toggleDDDField(); updatePhonePreview(); });
+document.addEventListener('change', (e) => { if (e.target.id === 'dddSelect' || e.target.id === 'dddInput') updatePhonePreview(); });
+document.getElementById('phoneNumber').addEventListener('input', updatePhonePreview);
+
+populateCountrySelect();
+populateDDDSelect();
+toggleDDDField();
+</script>
+</body>
+</html>
