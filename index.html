@@ -96,8 +96,8 @@ tr:last-child td{border-bottom:none}
 .filter-operacao label:hover{border-color:var(--gold);}
 .filter-operacao input{margin-right:4px;}
 
-/* ===== FUNDOS: mesmo visual que Vencimentos ===== */
-.op-badge {
+/* ===== FUNDOS e VENCIMENTOS badges ===== */
+.op-badge, .venc-badge {
   display:inline-flex;align-items:center;gap:4px;
   font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
   padding:3px 10px;border-radius:20px;white-space:nowrap;
@@ -105,6 +105,7 @@ tr:last-child td{border-bottom:none}
 .op-badge.aplicacao  { background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
 .op-badge.resgate    { background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.25);}
 .op-badge.outros     { background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.25);}
+.venc-badge          { background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
 
 /* card-header para fundos igual ao de vencimentos */
 #tab-fundos .card-header h2 { color:var(--gold); }
@@ -210,7 +211,7 @@ tr:last-child td{border-bottom:none}
     <button class="tab-btn" data-tab="tab-fundos"><span class="tab-icon">📅</span> Vencimentos — Fundos de Investimento</button>
   </div>
 
-  <!-- ==================== ABA 1: VENCIMENTOS (ORIGINAL) ==================== -->
+  <!-- ==================== ABA 1: VENCIMENTOS ==================== -->
   <div id="tab-vencimentos" class="tab-pane active">
     <div class="card">
       <div class="card-title"><span>📂 Planilha de vencimentos (renda_fixa / tesouro_direto / coe)</span></div>
@@ -249,10 +250,8 @@ tr:last-child td{border-bottom:none}
     <div id="resultAreaVenc"></div>
   </div>
 
-  <!-- ==================== ABA 2: FUNDOS DE INVESTIMENTO ==================== -->
+  <!-- ==================== ABA 2: FUNDOS ==================== -->
   <div id="tab-fundos" class="tab-pane">
-
-    <!-- Upload -->
     <div class="card">
       <div class="card-title"><span>📂 Planilha de Movimentações (Fundos de Investimento)</span></div>
       <div class="upload-area" id="dropZoneFundos">
@@ -267,11 +266,7 @@ tr:last-child td{border-bottom:none}
         <span id="fileLoadedNameFundos"></span>
       </div>
     </div>
-
-    <!-- Filtros (visíveis após upload) -->
     <div id="filterPanelFundos" style="display:none">
-
-      <!-- Filtro período -->
       <div class="card">
         <div class="card-title"><span>📅 Filtro por data de liquidação</span></div>
         <div class="filter-bar">
@@ -280,13 +275,8 @@ tr:last-child td{border-bottom:none}
           <button class="filter-btn" id="applyFilterFundos">Aplicar filtro</button>
         </div>
       </div>
-
-      <!-- WhatsApp -->
       <div class="card">
-        <div class="card-title">
-          <span>📱 Número de WhatsApp</span>
-          <button class="btn-clear" id="clearAllBtnFundos">🗑 Limpar tudo</button>
-        </div>
+        <div class="card-title"><span>📱 Número de WhatsApp</span><button class="btn-clear" id="clearAllBtnFundos">🗑 Limpar tudo</button></div>
         <div class="phone-bar">
           <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelectFundos" style="min-width:180px"></select></div>
           <div class="fg" id="dddContainerFundos"><span class="flabel">DDD</span><select class="finput" id="dddSelectFundos" style="min-width:80px"></select></div>
@@ -295,19 +285,15 @@ tr:last-child td{border-bottom:none}
         </div>
         <div class="phone-preview" id="numeroPreviewFundos">Número final: <span>não definido</span></div>
       </div>
-
-    </div><!-- /filterPanelFundos -->
-
-    <!-- Resultados -->
+    </div>
     <div id="resultAreaFundos"></div>
-
   </div>
 </main>
 
 <footer class="footer">💡 Na aba Fundos, use os filtros de operação para exibir apenas os tipos desejados (Aplicação, Resgate Parcial, Resgate Total). Clique na seta para ver a mensagem antes de enviar.</footer>
 
 <script>
-// ==================== FUNÇÕES GLOBAIS (países, DDD, tema, relógio) ====================
+// ==================== FUNÇÕES GLOBAIS ====================
 const countries = [
     { code: "1", name: "EUA", flag: "🇺🇸" }, { code: "7", name: "Rússia", flag: "🇷🇺" }, { code: "20", name: "Egito", flag: "🇪🇬" }, { code: "27", name: "África do Sul", flag: "🇿🇦" }, { code: "30", name: "Grécia", flag: "🇬🇷" }, { code: "31", name: "Países Baixos", flag: "🇳🇱" },
     { code: "32", name: "Bélgica", flag: "🇧🇪" }, { code: "33", name: "França", flag: "🇫🇷" }, { code: "34", name: "Espanha", flag: "🇪🇸" }, { code: "36", name: "Hungria", flag: "🇭🇺" }, { code: "39", name: "Itália", flag: "🇮🇹" }, { code: "40", name: "Romênia", flag: "🇷🇴" },
@@ -358,7 +344,6 @@ document.getElementById('themeBtn').addEventListener('click', () => {
   document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
 });
 
-// Funções de telefone (genéricas)
 function populateCountrySelect(selectId) {
     const select = document.getElementById(selectId);
     select.innerHTML = '';
@@ -408,7 +393,7 @@ function updatePhonePreview(previewId, countrySelectId, dddSelectId, phoneInputI
     preview.innerHTML = full ? `Número final: <b>+${full}</b>` : `Número final: <span style="color:var(--amber)">incompleto</span>`;
 }
 
-// ==================== MÓDULO VENCIMENTOS (original, intacto) ====================
+// ==================== MÓDULO VENCIMENTOS (COM VALOR E TOTAL) ====================
 let rawDataVenc = { renda_fixa: [], tesouro_direto: [], coe: [] };
 let currentStartVenc = null, currentEndVenc = null;
 let currentOrderVenc = 'asc';
@@ -434,13 +419,15 @@ function parseExcelDate(value) {
 function extractFromSheetVenc(rows, sheetName) {
     if (!rows || rows.length < 2) return [];
     const headers = rows[0].map(c => c ? c.toString().trim() : '');
-    let colClient = -1, colType = -1, colDue = -1;
+    let colClient = -1, colType = -1, colDue = -1, colIssuer = -1, colValue = -1;
     for (let i=0; i<headers.length; i++) {
         let h = headers[i].toLowerCase();
         if (h === 'clientid') colClient = i;
         if (sheetName === 'coe' && h === 'asset') colType = i;
         if ((sheetName === 'renda_fixa' || sheetName === 'tesouro_direto') && h === 'markettype') colType = i;
         if (h === 'duedate') colDue = i;
+        if (h === 'issuer') colIssuer = i;
+        if (h === 'closingvalue' || h === 'openingvalue') colValue = i;
     }
     if (colClient === -1) for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('client')) { colClient = i; break; }
     if (colType === -1 && sheetName !== 'coe') for (let i=0; i<headers.length; i++) if(headers[i].toLowerCase().includes('market') || headers[i].toLowerCase().includes('asset')) { colType = i; break; }
@@ -458,7 +445,29 @@ function extractFromSheetVenc(rows, sheetName) {
         if (!dueRaw) continue;
         const dueDate = parseExcelDate(dueRaw);
         if (!dueDate) continue;
-        result.push({ clientId: client.toString(), type: type.toString(), dueDate: dueDate, dueDateStr: dueDate.toLocaleDateString('pt-BR') });
+        let issuer = '';
+        if (colIssuer !== -1 && row[colIssuer] !== undefined && row[colIssuer] !== null) {
+            issuer = row[colIssuer].toString().trim();
+        }
+        let valor = null;
+        if (colValue !== -1 && row[colValue] !== undefined && row[colValue] !== null) {
+            let rawVal = row[colValue];
+            if (typeof rawVal === 'number') {
+                valor = rawVal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+            } else {
+                let num = parseFloat(rawVal.toString().replace(/\./g,'').replace(',','.'));
+                if (!isNaN(num)) valor = num.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+                else valor = rawVal.toString();
+            }
+        }
+        result.push({
+            clientId: client.toString(),
+            type: type.toString(),
+            dueDate: dueDate,
+            dueDateStr: dueDate.toLocaleDateString('pt-BR'),
+            issuer: issuer,
+            valor: valor
+        });
     }
     return result;
 }
@@ -491,19 +500,40 @@ function filterByDateVenc(dataArray, start, end) {
     if (!start || !end) return dataArray;
     return dataArray.filter(item => item.dueDate >= start && item.dueDate <= end);
 }
-function getGroupedMessagesVenc(dataArray) {
+function getGroupedItemsVenc(dataArray) {
     const groups = new Map();
     for (let item of dataArray) {
         const key = `${item.clientId}|${item.dueDateStr}`;
-        if (!groups.has(key)) groups.set(key, { clientId: item.clientId, dueDateStr: item.dueDateStr, dueDateObj: item.dueDate, ativos: [] });
-        groups.get(key).ativos.push(item.type);
+        if (!groups.has(key)) groups.set(key, {
+            clientId: item.clientId,
+            dueDateStr: item.dueDateStr,
+            dueDateObj: item.dueDate,
+            itens: []
+        });
+        groups.get(key).itens.push({ type: item.type, issuer: item.issuer, valor: item.valor });
     }
-    return Array.from(groups.values()).map(g => ({ ...g, ativos: [...new Set(g.ativos)] }));
+    return Array.from(groups.values());
+}
+function parseValorNumber(valorStr) {
+    if (!valorStr) return 0;
+    if (typeof valorStr === 'number') return valorStr;
+    return parseFloat(valorStr.toString().replace(/\./g,'').replace(',','.')) || 0;
+}
+function formatTotalItens(itens) {
+    let total = itens.reduce((acc, it) => acc + parseValorNumber(it.valor), 0);
+    if (total === 0) return '—';
+    return `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 }
 function gerarMensagemVenc(group) {
-    const ativosList = group.ativos.join(', ');
-    const artigo = group.ativos.length === 1 ? 'o seu ativo' : 'os seus ativos';
-    return `Prezado(a) ${group.clientId}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}. Assim que o recurso for liquidado em sua conta, se não houver necessidade de resgate imediato por sua parte, faremos a análise para realocá-lo estrategicamente, mantendo o alinhamento com as metas da sua carteira e de acordo com as recomendações do nosso comitê de alocações. Estou à disposição caso queira alinhar algum ponto.`;
+    const ativosList = group.itens.map(it => it.type).join(', ');
+    const artigo = group.itens.length === 1 ? 'o seu ativo' : 'os seus ativos';
+    let msg = `Prezado(a) ${group.clientId}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}.`;
+    const issuers = [...new Set(group.itens.map(it => it.issuer).filter(i => i))];
+    if (issuers.length > 0) {
+        msg += ` Emissor(es): ${issuers.join(', ')}.`;
+    }
+    msg += ` Assim que o recurso for liquidado em sua conta, se não houver necessidade de resgate imediato por sua parte, faremos a análise para realocá-lo estrategicamente, mantendo o alinhamento com as metas da sua carteira e de acordo com as recomendações do nosso comitê de alocações. Estou à disposição caso queira alinhar algum ponto.`;
+    return msg;
 }
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
 const waIcon = '<svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.523 5.849L0 24l6.335-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.006-1.371l-.36-.213-3.728.887.906-3.638-.234-.374A9.793 9.793 0 012.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>';
@@ -522,16 +552,17 @@ function renderCardsVenc() {
     const createCard = (title, icon, data, key) => {
         const card = document.createElement('div');
         card.className = 'card';
-        let grouped = getGroupedMessagesVenc(data);
-        grouped.sort((a,b) => {
+        let groups = getGroupedItemsVenc(data);
+        groups.sort((a,b) => {
             const dateA = new Date(a.dueDateStr.split('/').reverse().join('-'));
             const dateB = new Date(b.dueDateStr.split('/').reverse().join('-'));
             return currentOrderVenc === 'asc' ? dateA - dateB : dateB - dateA;
         });
-        const totalMsgs = grouped.length;
+        const totalGroups = groups.length;
+        const totalRegistros = data.length;
         card.innerHTML = `
             <div class="card-header">
-                <h2>${icon} ${title} <span>(${totalMsgs} mensagens)</span></h2>
+                <h2>${icon} ${title} <span>(${totalGroups} cliente${totalGroups!==1?'s':''} · ${totalRegistros} ativo${totalRegistros!==1?'s':''})</span></h2>
                 <button class="toggle-btn" data-key="${key}">Mostrar/Esconder</button>
             </div>
             <div class="table-container-${key}" style="display:block;">
@@ -546,29 +577,53 @@ function renderCardsVenc() {
                             </tr>
                         </thead>
                         <tbody id="tbody-${key}">
-                            ${grouped.map((g, idx) => `
-                                <tr data-client="${escapeHtml(g.clientId)}" data-data="${g.dueDateStr}" data-ativos='${JSON.stringify(g.ativos)}'>
-                                    <td><strong>${escapeHtml(g.clientId)}</strong></td>
-                                    <td>${escapeHtml(g.ativos.join(', '))}</td>
-                                    <td>${g.dueDateStr}</td>
+                            ${groups.map((group, gIdx) => {
+                                const tiposUnicos = [...new Set(group.itens.map(it => it.type))];
+                                const ativosDisplay = tiposUnicos.join(', ');
+                                return `
+                                <tr data-gidx="${gIdx}" data-client="${escapeHtml(group.clientId)}" data-date="${group.dueDateStr}" data-itens='${JSON.stringify(group.itens)}'>
+                                    <td><strong>${escapeHtml(group.clientId)}</strong>${group.itens.length > 1 ? `<span class="badge-count">${group.itens.length}</span>` : ''}</td>
+                                    <td>${escapeHtml(ativosDisplay)}</td>
+                                    <td>${group.dueDateStr}</td>
                                     <td>
-                                        <button class="btn-whats">${waIcon} Enviar WhatsApp</button>
-                                        <button class="expand-icon" data-key="${key}" data-idx="${idx}">▼</button>
+                                        <div style="display:flex;align-items:center;gap:6px;">
+                                            <button class="btn-whats" data-gidx="${gIdx}">${waIcon} Enviar WhatsApp</button>
+                                            <button class="expand-icon" data-gidx="${gIdx}">▼</button>
+                                        </div>
                                     </td>
                                 </tr>
-                                <tr class="msg-row-${key}-${idx}" style="display: none;">
-                                    <td colspan="4">
-                                        <div class="message-preview" id="preview-${key}-${idx}"></div>
-                                        <button class="btn-copy" data-key="${key}" data-idx="${idx}">📄 Copiar mensagem</button>
+                                <tr class="msg-row-${key}-${gIdx}" style="display:none;">
+                                    <td colspan="4" style="padding:0 12px 12px;">
+                                        <div class="detail-inner">
+                                            <div class="detail-inner-header">
+                                                <span>Detalhamento — ${group.dueDateStr}</span>
+                                                <span>${group.itens.length} ativo${group.itens.length!==1?'s':''}</span>
+                                            </div>
+                                            ${group.itens.map(it => {
+                                                const valorFormatado = it.valor ? `R$ ${it.valor}` : '—';
+                                                return `
+                                                <div class="detail-item-row">
+                                                    <span class="venc-badge">Vencimento</span>
+                                                    <span class="detail-item-fundo" title="${escapeHtml(it.type)}">${escapeHtml(it.type)}${it.issuer ? ` (${escapeHtml(it.issuer)})` : ''}</span>
+                                                    <span class="detail-item-val">${valorFormatado}</span>
+                                                </div>`;
+                                            }).join('')}
+                                            <div class="detail-total-bar">
+                                                <span>Total disponível em ${group.dueDateStr}</span>
+                                                <span>${formatTotalItens(group.itens)}</span>
+                                            </div>
+                                        </div>
+                                        <div class="message-preview" id="preview-${key}-${gIdx}"></div>
+                                        <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
                                     </td>
                                 </tr>
-                            `).join('')}
+                            `}).join('')}
                         </tbody>
                     </table>
                 </div>
             </div>
         `;
-        if (grouped.length === 0) card.querySelector('.scroll-table').innerHTML = '<div class="empty-msg">Nenhum vencimento no período.</div>';
+        if (groups.length === 0) card.querySelector('.scroll-table').innerHTML = '<div class="empty-msg">Nenhum vencimento no período.</div>';
         return card;
     };
     resultDiv.appendChild(createCard('Renda Fixa', '📈', filtered.renda_fixa, 'renda_fixa'));
@@ -597,16 +652,17 @@ function renderCardsVenc() {
             const msgRow = rows[i+1];
             if (!mainRow || !msgRow) continue;
             const expandBtn = mainRow.querySelector('.expand-icon');
-            const idx = expandBtn.getAttribute('data-idx');
+            const gIdx = expandBtn.getAttribute('data-gidx');
             const copyBtn = msgRow.querySelector('.btn-copy');
             const previewDiv = msgRow.querySelector('.message-preview');
+            const group = {
+                clientId: mainRow.dataset.client,
+                dueDateStr: mainRow.dataset.date,
+                itens: JSON.parse(mainRow.dataset.itens)
+            };
             expandBtn.addEventListener('click', (e) => {
                 if (msgRow.style.display === 'none') {
                     if (!previewDiv.innerHTML) {
-                        const clientId = mainRow.dataset.client;
-                        const dueDate = mainRow.dataset.data;
-                        const ativos = JSON.parse(mainRow.dataset.ativos);
-                        const group = { clientId, ativos, dueDateStr: dueDate };
                         const mensagem = gerarMensagemVenc(group);
                         previewDiv.innerHTML = mensagem;
                         copyBtn.onclick = () => { navigator.clipboard.writeText(mensagem).then(() => alert('Mensagem copiada!')); };
@@ -620,15 +676,10 @@ function renderCardsVenc() {
             });
             const whatsBtn = mainRow.querySelector('.btn-whats');
             whatsBtn.addEventListener('click', () => {
-                const clientId = mainRow.dataset.client;
-                const dueDate = mainRow.dataset.data;
-                const ativos = JSON.parse(mainRow.dataset.ativos);
-                const group = { clientId, ativos, dueDateStr: dueDate };
                 const mensagem = gerarMensagemVenc(group);
                 const numero = getFullPhoneNumber('countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
                 if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
-                const link = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
-                window.open(link, '_blank');
+                window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
             });
         }
     }
@@ -649,16 +700,28 @@ function clearAllVenc() {
     updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
     toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 }
-// Inicialização vencimentos
+// Corrige o filtro de data para usar data local
+function parseLocalDate(dateString) {
+    if (!dateString) return null;
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+    }
+    return new Date(dateString);
+}
 populateCountrySelect('countrySelectVenc');
 populateDDDSelect('dddSelectVenc');
-document.getElementById('applyFilterVenc').addEventListener('click', () => {
+const applyFilterVencBtn = document.getElementById('applyFilterVenc');
+const vencFilterHandler = () => {
     const startVal = document.getElementById('startDateVenc').value;
     const endVal = document.getElementById('endDateVenc').value;
-    currentStartVenc = startVal ? new Date(startVal) : null;
-    currentEndVenc = endVal ? new Date(endVal) : null;
+    currentStartVenc = startVal ? parseLocalDate(startVal) : null;
+    currentEndVenc = endVal ? parseLocalDate(endVal) : null;
     renderCardsVenc();
-});
+};
+applyFilterVencBtn.removeEventListener('click', applyFilterVencBtn._listener);
+applyFilterVencBtn.addEventListener('click', vencFilterHandler);
+applyFilterVencBtn._listener = vencFilterHandler;
 document.getElementById('testNumberBtnVenc').addEventListener('click', () => {
     const full = getFullPhoneNumber('countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
     alert(full ? `Número completo: +${full}` : 'Número inválido');
@@ -684,11 +747,11 @@ dropZoneVenc.addEventListener('drop', (e) => {
 fileInputVenc.addEventListener('change', () => { if (fileInputVenc.files[0]) processExcelVenc(fileInputVenc.files[0]); });
 toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 
-// ==================== MÓDULO FUNDOS DE INVESTIMENTO (COM FILTRO GLOBAL POR OPERAÇÃO) ====================
-let rawDataFundos = []; // array de objetos: { cliente, operacao, fundo, dataLiq, valor }
+// ==================== MÓDULO FUNDOS (INALTERADO, APENAS CORREÇÃO DA DATA NA TABELA) ====================
+let rawDataFundos = [];
 let currentStartFundos = null, currentEndFundos = null;
-let currentOrderFundos = 'asc'; // ordenação por data
-let operacaoFilter = ['Aplicação', 'Resgate Parcial', 'Resgate Total']; // padrão: todos selecionados
+let currentOrderFundos = 'asc';
+let operacaoFilter = ['Aplicação', 'Resgate Parcial', 'Resgate Total'];
 
 function parseExcelDateFundos(value) {
     if (!value) return null;
@@ -711,7 +774,6 @@ function parseExcelDateFundos(value) {
 function extractFromSheetFundos(rows) {
     if (!rows || rows.length < 2) return [];
     const headers = rows[0].map(c => c ? c.toString().trim() : '');
-    // Mapear colunas conforme o Excel real: "Código do Cliente", "Operação", "Fundo", "Data da Liquidação", "Valor Solicitado"
     let colCliente = -1, colOperacao = -1, colFundo = -1, colDataLiq = -1, colValor = -1;
     for (let i=0; i<headers.length; i++) {
         let h = headers[i];
@@ -721,7 +783,6 @@ function extractFromSheetFundos(rows) {
         if (h === 'Data da Liquidação' || h === 'Data da liquidação' || h.toLowerCase().includes('liquidação')) colDataLiq = i;
         if (h === 'Valor Solicitado' || h === 'Valor solicitado' || h.toLowerCase().includes('valor')) colValor = i;
     }
-    // Fallbacks
     if (colCliente === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('cliente')){colCliente=i;break;}
     if (colOperacao === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('opera')){colOperacao=i;break;}
     if (colFundo === -1) for (let i=0;i<headers.length;i++) if(headers[i].toLowerCase().includes('fundo')){colFundo=i;break;}
@@ -740,7 +801,6 @@ function extractFromSheetFundos(rows) {
         const cliente = row[colCliente];
         if (!cliente || cliente === '') continue;
         let operacao = (colOperacao !== -1 && row[colOperacao]) ? row[colOperacao].toString().trim() : '';
-        // Normalizar operação (remover espaços extras)
         operacao = operacao.replace(/\s+/g, ' ').trim();
         const fundo = row[colFundo];
         if (!fundo) continue;
@@ -763,7 +823,7 @@ function extractFromSheetFundos(rows) {
 async function processExcelFundos(file) {
     const data = await file.arrayBuffer();
     const workbook = XLSX.read(data, { type: 'array' });
-    const sheetName = workbook.SheetNames[0]; // usa primeira aba
+    const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
     rawDataFundos = extractFromSheetFundos(rows);
@@ -776,9 +836,8 @@ async function processExcelFundos(file) {
     currentStartFundos = today;
     currentEndFundos = future;
     currentOrderFundos = 'asc';
-    // Inicializar filtro de operação com os valores únicos encontrados
     const uniqueOps = [...new Set(rawDataFundos.map(item => item.operacao).filter(op => op))];
-    if (uniqueOps.length > 0) operacaoFilter = [...uniqueOps]; // seleciona todas por padrão
+    if (uniqueOps.length > 0) operacaoFilter = [...uniqueOps];
     renderFilterCheckboxes(uniqueOps);
     renderCardsFundos();
     updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
@@ -836,7 +895,6 @@ function renderCardsFundos() {
         return;
     }
 
-    // ── Agrupar por cliente + data ──────────────────────────────────────────
     const groupMap = new Map();
     filtered.forEach(item => {
         const key = `${item.cliente}|${item.dataLiqStr}`;
@@ -844,7 +902,6 @@ function renderCardsFundos() {
         groupMap.get(key).itens.push(item);
     });
     const groups = Array.from(groupMap.values());
-    // manter ordem já definida pelo sort
     groups.sort((a,b) => currentOrderFundos === 'asc' ? a.dataLiq - b.dataLiq : b.dataLiq - a.dataLiq);
 
     const totalGroups = groups.length;
@@ -859,7 +916,6 @@ function renderCardsFundos() {
 
     function parseBRNumber(str) {
         if (!str) return 0;
-        // "36.010,17" → 36010.17
         return parseFloat(str.toString().replace(/\./g,'').replace(',','.')) || 0;
     }
 
@@ -908,9 +964,6 @@ function renderCardsFundos() {
                             const total = itens.reduce((acc, it) => acc + parseBRNumber(it.valor), 0);
                             const totalFmt = `R$ ${formatBR(total)}`;
                             const opsUniq = [...new Set(itens.map(it => it.operacao))];
-                            const fundosList = itens.length === 1
-                                ? `<span title="${escapeHtml(itens[0].fundo)}" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block">${escapeHtml(itens[0].fundo)}</span>`
-                                : `<span style="color:var(--text3);font-size:11px">${itens.length} fundos</span>`;
                             const badgesHtml = opsUniq.map(op => opBadge(op)).join(' ');
                             return `
                             <tr data-gidx="${gIdx}">
@@ -933,7 +986,7 @@ function renderCardsFundos() {
                                         <button class="expand-icon" data-gidx="${gIdx}">▼</button>
                                     </div>
                                 </td>
-                            </tr>
+                             </tr>
                             <tr class="msg-row-fundos-${gIdx}" style="display:none;">
                                 <td colspan="6" style="padding:0 12px 12px;">
                                     ${itens.length > 1 ? `
@@ -965,7 +1018,6 @@ function renderCardsFundos() {
     `;
     resultDiv.appendChild(card);
 
-    // ── Eventos ──────────────────────────────────────────────────────────────
     const toggleBtn = card.querySelector('.toggle-btn');
     const tableContainer = card.querySelector('.table-container-fundos');
     toggleBtn.addEventListener('click', () => {
@@ -1028,16 +1080,21 @@ function clearAllFundos() {
     updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
     toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
 }
-// Inicialização módulo Fundos
-populateCountrySelect('countrySelectFundos');
-populateDDDSelect('dddSelectFundos');
-document.getElementById('applyFilterFundos').addEventListener('click', () => {
+// Corrige o filtro de data do módulo Fundos também
+const applyFilterFundosBtn = document.getElementById('applyFilterFundos');
+const fundosFilterHandler = () => {
     const startVal = document.getElementById('startDateFundos').value;
     const endVal = document.getElementById('endDateFundos').value;
-    currentStartFundos = startVal ? new Date(startVal) : null;
-    currentEndFundos = endVal ? new Date(endVal) : null;
+    currentStartFundos = startVal ? parseLocalDate(startVal) : null;
+    currentEndFundos = endVal ? parseLocalDate(endVal) : null;
     renderCardsFundos();
-});
+};
+applyFilterFundosBtn.removeEventListener('click', applyFilterFundosBtn._listener);
+applyFilterFundosBtn.addEventListener('click', fundosFilterHandler);
+applyFilterFundosBtn._listener = fundosFilterHandler;
+
+populateCountrySelect('countrySelectFundos');
+populateDDDSelect('dddSelectFundos');
 document.getElementById('testNumberBtnFundos').addEventListener('click', () => {
     const full = getFullPhoneNumber('countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
     alert(full ? `Número completo: +${full}` : 'Número inválido');
