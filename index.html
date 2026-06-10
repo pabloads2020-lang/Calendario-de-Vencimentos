@@ -6,6 +6,7 @@
 <title>Leitor de Vencimentos + Fundos | WhatsApp</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Atkinson+Hyperlegible:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" rel="stylesheet">
 <style>
 :root{
   --bg:#0e1117;--bg2:#161b25;--bg3:#1c2333;
@@ -30,14 +31,174 @@ body.light{
   --amber:#e67e22;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s}
-.header{background:var(--card-bg);border-bottom:1px solid var(--card-border);padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header-logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600}
-.dot{width:auto; padding:0 12px; min-width:36px; background:var(--gold); border-radius:40px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#000; height:32px;}
-.header-right{display:flex;align-items:center;gap:.8rem}
-.hdate{font-size:12px;color:var(--text3);font-family:'Atkinson Hyperlegible',monospace;white-space:nowrap}
-.theme-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:30px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s}
-.theme-btn:hover{border-color:var(--gold)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s;padding-top:0}
+
+/* ==================== TOPBAR PADRÃO HUB FINANCEIRO ==================== */
+.hub-topbar {
+  --bg-topbar: #141720;
+  --border-topbar: #2a2e3f;
+  --text-topbar: #e1e3ef;
+  --text2-topbar: #9a9eb8;
+  --text3-topbar: #5c6080;
+  --gold-topbar: #f5c842;
+  --amber-topbar: #e0ac2c;
+  font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-topbar);
+  border-bottom: 1px solid var(--border-topbar);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+body.light .hub-topbar {
+  --bg-topbar: #ffffff;
+  --border-topbar: #d4d8e2;
+  --text-topbar: #1a1d2e;
+  --text2-topbar: #4a4f6a;
+  --text3-topbar: #8a90a8;
+  --gold-topbar: #b8860b;
+  --amber-topbar: #c47d00;
+}
+.hub-topbar-left, .hub-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.hub-topbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.hub-pbf-badge {
+  background: var(--gold-topbar);
+  padding: 0 12px;
+  height: 30px;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: 0.5px;
+}
+.hub-topbar-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-topbar);
+  white-space: nowrap;
+}
+.hub-back-btn, .hub-newtab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: 1px solid var(--border-topbar);
+  border-radius: 8px;
+  color: var(--text2-topbar);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+.hub-back-btn:hover, .hub-newtab-btn:hover {
+  border-color: var(--amber-topbar);
+  color: var(--gold-topbar);
+  background: var(--bg-topbar);
+}
+.hub-back-btn .material-symbols-outlined,
+.hub-newtab-btn .material-symbols-outlined {
+  font-size: 16px;
+}
+.hub-active-tool {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold-topbar);
+  white-space: nowrap;
+  background: transparent;
+}
+.hub-clock {
+  font-size: 11px;
+  color: var(--text3-topbar);
+  font-variant-numeric: tabular-nums;
+  background: var(--bg-topbar);
+  padding: 4px 10px;
+  border-radius: 30px;
+  border: 1px solid var(--border-topbar);
+}
+.hub-theme-btn {
+  background: var(--bg-topbar);
+  border: 1px solid var(--border-topbar);
+  border-radius: 30px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+.hub-theme-btn:hover {
+  border-color: var(--gold-topbar);
+}
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+@media (max-width: 600px) {
+  .hub-back-btn span:not(.material-symbols-outlined),
+  .hub-newtab-btn span:not(.material-symbols-outlined) {
+    display: none;
+  }
+  .hub-back-btn, .hub-newtab-btn {
+    padding: 5px 8px;
+  }
+  .hub-active-tool {
+    font-size: 13px;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hub-clock {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+}
+@media (max-width: 480px) {
+  .hub-topbar-title {
+    display: none;
+  }
+  .hub-topbar-center {
+    position: static;
+    transform: none;
+    margin: 0 auto;
+  }
+}
+/* ==================== FIM TOPBAR ==================== */
+
+/* ESTILOS ORIGINAIS (AJUSTADOS) */
 .main{max-width:1200px;margin:0 auto;padding:1.5rem}
 .tabs{display:flex;gap:8px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);}
 .tab-btn{background:transparent;border:none;padding:10px 20px;font-size:14px;font-weight:600;color:var(--text3);cursor:pointer;border-radius:30px 30px 0 0;transition:all .2s;}
@@ -95,115 +256,51 @@ tr:last-child td{border-bottom:none}
 .filter-operacao label{display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;background:var(--bg3);padding:4px 12px;border-radius:30px;border:1px solid var(--border2);transition:all .2s;}
 .filter-operacao label:hover{border-color:var(--gold);}
 .filter-operacao input{margin-right:4px;}
-
-/* ===== FUNDOS e VENCIMENTOS badges ===== */
-.op-badge, .venc-badge {
-  display:inline-flex;align-items:center;gap:4px;
-  font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  padding:3px 10px;border-radius:20px;white-space:nowrap;
-}
+.op-badge, .venc-badge { display:inline-flex;align-items:center;gap:4px; font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase; padding:3px 10px;border-radius:20px;white-space:nowrap;}
 .op-badge.aplicacao  { background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
 .op-badge.resgate    { background:rgba(231,76,60,.12);color:var(--red);border:1px solid rgba(231,76,60,.25);}
 .op-badge.outros     { background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.25);}
 .venc-badge          { background:rgba(46,204,113,.15);color:var(--green);border:1px solid rgba(46,204,113,.3);}
-
-/* card-header para fundos igual ao de vencimentos */
-#tab-fundos .card-header h2 { color:var(--gold); }
-#tab-fundos .card-header h2 span { font-size:.7rem;color:var(--text3);font-weight:400; }
-
-/* ===== Badge circular count ===== */
-.badge-count {
-  display:inline-flex;align-items:center;justify-content:center;
-  width:22px;height:22px;border-radius:50%;
-  font-size:11px;font-weight:700;
-  background:rgba(245,200,66,.15);color:var(--gold);
-  border:1px solid rgba(245,200,66,.35);
-  margin-left:7px;flex-shrink:0;
-}
-.detail-inner {
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:10px;overflow:hidden;margin-bottom:10px;
-}
-.detail-inner-header {
-  display:flex;align-items:center;justify-content:space-between;
-  padding:7px 14px;border-bottom:1px solid var(--border);
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:1px;color:var(--text3);
-}
-.detail-item-row {
-  display:flex;align-items:center;gap:10px;
-  padding:9px 14px;border-bottom:1px solid var(--border);
-}
+.badge-count { display:inline-flex;align-items:center;justify-content:center; width:22px;height:22px;border-radius:50%; font-size:11px;font-weight:700; background:rgba(245,200,66,.15);color:var(--gold); border:1px solid rgba(245,200,66,.35); margin-left:7px;flex-shrink:0;}
+.detail-inner { background:var(--bg2);border:1px solid var(--border); border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.detail-inner-header { display:flex;align-items:center;justify-content:space-between; padding:7px 14px;border-bottom:1px solid var(--border); font-size:10px;font-weight:700;text-transform:uppercase; letter-spacing:1px;color:var(--text3);}
+.detail-item-row { display:flex;align-items:center;gap:10px; padding:9px 14px;border-bottom:1px solid var(--border);}
 .detail-item-row:last-child{border-bottom:none;}
-.detail-item-fundo {
-  flex:1;font-size:12px;color:var(--text2);
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-.detail-item-val {
-  font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;
-}
-.detail-total-bar {
-  display:flex;justify-content:space-between;align-items:center;
-  padding:8px 14px;
-  background:rgba(245,200,66,.07);
-  border-top:1px solid rgba(245,200,66,.2);
-}
-.detail-total-bar span:first-child {
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:1px;color:rgba(245,200,66,.6);
-}
-.detail-total-bar span:last-child {
-  font-size:13px;font-weight:700;color:var(--gold);
-}
-
-/* ===== TAB NAV melhorado ===== */
-.tabs {
-  display:flex;gap:4px;margin-bottom:1.5rem;
-  border-bottom:2px solid var(--border);
-  padding-bottom:0;
-}
-.tab-btn {
-  background:transparent;border:none;
-  padding:10px 22px;font-size:13px;font-weight:600;
-  color:var(--text3);cursor:pointer;
-  border-radius:10px 10px 0 0;
-  transition:all .2s;border-bottom:2px solid transparent;
-  margin-bottom:-2px;
-}
-.tab-btn:hover { color:var(--text2);background:var(--bg3); }
-.tab-btn.active {
-  color:var(--gold);
-  border-bottom:2px solid var(--gold);
-  background:rgba(245,200,66,.06);
-}
-.tab-btn .tab-icon { font-size:15px; }
-
-/* ===== Section divider dentro de cada aba ===== */
-.section-divider {
-  display:flex;align-items:center;gap:10px;
-  margin:1.5rem 0 1rem;
-}
-.section-divider span {
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:1.5px;color:var(--text3);white-space:nowrap;
-}
-.section-divider::before,.section-divider::after {
-  content:'';flex:1;height:1px;background:var(--border);
-}
+.detail-item-fundo { flex:1;font-size:12px;color:var(--text2); overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.detail-item-val { font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;}
+.detail-total-bar { display:flex;justify-content:space-between;align-items:center; padding:8px 14px; background:rgba(245,200,66,.07); border-top:1px solid rgba(245,200,66,.2);}
+.detail-total-bar span:first-child { font-size:10px;font-weight:700;text-transform:uppercase; letter-spacing:1px;color:rgba(245,200,66,.6);}
+.detail-total-bar span:last-child { font-size:13px;font-weight:700;color:var(--gold);}
+.section-divider { display:flex;align-items:center;gap:10px; margin:1.5rem 0 1rem;}
+.section-divider span { font-size:10px;font-weight:700;text-transform:uppercase; letter-spacing:1.5px;color:var(--text3);white-space:nowrap;}
+.section-divider::before,.section-divider::after { content:'';flex:1;height:1px;background:var(--border);}
 </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-logo">
-    <div class="dot">PBF</div>
-    Calendário de Vencimentos · Fundos · WhatsApp
+<!-- ==================== TOPBAR PADRÃO HUB FINANCEIRO ==================== -->
+<div class="hub-topbar">
+  <div class="hub-topbar-left">
+    <div class="hub-pbf-badge">PBF</div>
+    <span class="hub-topbar-title">Hub Financeiro</span>
+    <button class="hub-back-btn" id="hubBackBtn">
+      <span class="material-symbols-outlined">arrow_back</span>
+      <span>Voltar ao início</span>
+    </button>
   </div>
-  <div class="header-right">
-    <div class="hdate" id="hDate"></div>
-    <button class="theme-btn" id="themeBtn">🌙</button>
+  <div class="hub-topbar-center">
+    <span id="hubActiveToolName" class="hub-active-tool">Calendário de Vencimentos</span>
   </div>
-</header>
+  <div class="hub-topbar-right">
+    <button class="hub-newtab-btn" id="hubNewTabBtn">
+      <span class="material-symbols-outlined">open_in_new</span>
+      <span>Nova aba</span>
+    </button>
+    <span class="hub-clock" id="hubClock"></span>
+    <button class="hub-theme-btn" id="hubThemeBtn">🌙</button>
+  </div>
+</div>
+<!-- ==================== FIM TOPBAR ==================== -->
 
 <main class="main">
   <div class="tabs">
@@ -293,6 +390,55 @@ tr:last-child td{border-bottom:none}
 <footer class="footer">💡 Na aba Fundos, use os filtros de operação para exibir apenas os tipos desejados (Aplicação, Resgate Parcial, Resgate Total). Clique na seta para ver a mensagem antes de enviar.</footer>
 
 <script>
+// ==================== TOPBAR FUNCTIONS ====================
+document.getElementById('hubBackBtn')?.addEventListener('click', () => {
+  if (window.self !== window.top) {
+    window.parent.postMessage({ action: 'hubNavigate', target: 'home' }, '*');
+  } else {
+    window.location.href = "https://pabloads2020-lang.github.io/Dashboard-Ferramentas-Integradas/";
+  }
+});
+document.getElementById('hubNewTabBtn')?.addEventListener('click', () => {
+  window.open(window.location.href, '_blank');
+});
+
+function updateClock() {
+  const clockEl = document.getElementById('hubClock');
+  if(!clockEl) return;
+  const now = new Date();
+  const formatted = now.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) + ' · ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  clockEl.textContent = formatted;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ==================== THEME (integrado com hubThemeBtn) ====================
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const btnTheme = document.getElementById('hubThemeBtn');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light');
+    if(btnTheme) btnTheme.textContent = '☀️';
+  } else {
+    document.body.classList.remove('light');
+    if(btnTheme) btnTheme.textContent = '🌙';
+  }
+  if(btnTheme) {
+    btnTheme.addEventListener('click', () => {
+      if (document.body.classList.contains('light')) {
+        document.body.classList.remove('light');
+        localStorage.setItem('theme', 'dark');
+        btnTheme.textContent = '🌙';
+      } else {
+        document.body.classList.add('light');
+        localStorage.setItem('theme', 'light');
+        btnTheme.textContent = '☀️';
+      }
+    });
+  }
+}
+initTheme();
+
 // ==================== FUNÇÕES GLOBAIS ====================
 const countries = [
     { code: "1", name: "EUA", flag: "🇺🇸" }, { code: "7", name: "Rússia", flag: "🇷🇺" }, { code: "20", name: "Egito", flag: "🇪🇬" }, { code: "27", name: "África do Sul", flag: "🇿🇦" }, { code: "30", name: "Grécia", flag: "🇬🇷" }, { code: "31", name: "Países Baixos", flag: "🇳🇱" },
@@ -332,17 +478,6 @@ const countries = [
     { code: "994", name: "Azerbaijão", flag: "🇦🇿" }, { code: "995", name: "Geórgia", flag: "🇬🇪" }, { code: "996", name: "Quirguistão", flag: "🇰🇬" }, { code: "998", name: "Uzbequistão", flag: "🇺🇿" }
 ];
 const brazilDDDs = ["11","12","13","14","15","16","17","18","19","21","22","24","27","28","31","32","33","34","35","37","38","41","42","43","44","45","46","47","48","49","51","53","54","55","61","62","63","64","65","66","67","68","69","71","73","74","75","77","79","81","82","83","84","85","86","87","88","89","91","92","93","94","95","96","97","98","99"];
-
-function updateClock(){
-  document.getElementById('hDate').textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' + new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-updateClock(); setInterval(updateClock, 1000);
-let isDark = true;
-document.getElementById('themeBtn').addEventListener('click', () => {
-  isDark = !isDark;
-  document.body.classList.toggle('light', !isDark);
-  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
-});
 
 function populateCountrySelect(selectId) {
     const select = document.getElementById(selectId);
@@ -393,7 +528,7 @@ function updatePhonePreview(previewId, countrySelectId, dddSelectId, phoneInputI
     preview.innerHTML = full ? `Número final: <b>+${full}</b>` : `Número final: <span style="color:var(--amber)">incompleto</span>`;
 }
 
-// ==================== MÓDULO VENCIMENTOS (COM VALOR E TOTAL) ====================
+// ==================== MÓDULO VENCIMENTOS ====================
 let rawDataVenc = { renda_fixa: [], tesouro_direto: [], coe: [] };
 let currentStartVenc = null, currentEndVenc = null;
 let currentOrderVenc = 'asc';
@@ -415,6 +550,14 @@ function parseExcelDate(value) {
         if (!isNaN(d) && !isNaN(m) && !isNaN(y)) return new Date(y, m, d);
     }
     return null;
+}
+function parseLocalDate(dateString) {
+    if (!dateString) return null;
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+    }
+    return new Date(dateString);
 }
 function extractFromSheetVenc(rows, sheetName) {
     if (!rows || rows.length < 2) return [];
@@ -616,8 +759,8 @@ function renderCardsVenc() {
                                         <div class="message-preview" id="preview-${key}-${gIdx}"></div>
                                         <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
                                     </td>
-                                </tr>
-                            `}).join('')}
+                                </table>`;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -700,28 +843,15 @@ function clearAllVenc() {
     updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
     toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 }
-// Corrige o filtro de data para usar data local
-function parseLocalDate(dateString) {
-    if (!dateString) return null;
-    const parts = dateString.split('-');
-    if (parts.length === 3) {
-        return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-    }
-    return new Date(dateString);
-}
 populateCountrySelect('countrySelectVenc');
 populateDDDSelect('dddSelectVenc');
-const applyFilterVencBtn = document.getElementById('applyFilterVenc');
-const vencFilterHandler = () => {
+document.getElementById('applyFilterVenc').addEventListener('click', () => {
     const startVal = document.getElementById('startDateVenc').value;
     const endVal = document.getElementById('endDateVenc').value;
     currentStartVenc = startVal ? parseLocalDate(startVal) : null;
     currentEndVenc = endVal ? parseLocalDate(endVal) : null;
     renderCardsVenc();
-};
-applyFilterVencBtn.removeEventListener('click', applyFilterVencBtn._listener);
-applyFilterVencBtn.addEventListener('click', vencFilterHandler);
-applyFilterVencBtn._listener = vencFilterHandler;
+});
 document.getElementById('testNumberBtnVenc').addEventListener('click', () => {
     const full = getFullPhoneNumber('countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
     alert(full ? `Número completo: +${full}` : 'Número inválido');
@@ -747,7 +877,7 @@ dropZoneVenc.addEventListener('drop', (e) => {
 fileInputVenc.addEventListener('change', () => { if (fileInputVenc.files[0]) processExcelVenc(fileInputVenc.files[0]); });
 toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 
-// ==================== MÓDULO FUNDOS (INALTERADO, APENAS CORREÇÃO DA DATA NA TABELA) ====================
+// ==================== MÓDULO FUNDOS ====================
 let rawDataFundos = [];
 let currentStartFundos = null, currentEndFundos = null;
 let currentOrderFundos = 'asc';
@@ -913,16 +1043,13 @@ function renderCardsFundos() {
         if (low.includes('resgate')) return `<span class="op-badge resgate">${escapeHtml(op)}</span>`;
         return `<span class="op-badge outros">${escapeHtml(op)}</span>`;
     }
-
     function parseBRNumber(str) {
         if (!str) return 0;
         return parseFloat(str.toString().replace(/\./g,'').replace(',','.')) || 0;
     }
-
     function formatBR(num) {
         return num.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
     }
-
     function gerarMensagemGrupo(group) {
         const { cliente, dataLiqStr, itens } = group;
         const total = itens.reduce((acc, it) => acc + parseBRNumber(it.valor), 0);
@@ -986,7 +1113,7 @@ function renderCardsFundos() {
                                         <button class="expand-icon" data-gidx="${gIdx}">▼</button>
                                     </div>
                                 </td>
-                             </tr>
+                              </tr>
                             <tr class="msg-row-fundos-${gIdx}" style="display:none;">
                                 <td colspan="6" style="padding:0 12px 12px;">
                                     ${itens.length > 1 ? `
@@ -1009,7 +1136,7 @@ function renderCardsFundos() {
                                     <div class="message-preview" id="preview-fundos-${gIdx}"></div>
                                     <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
                                 </td>
-                            </tr>`;
+                             </tr>`;
                         }).join('')}
                     </tbody>
                 </table>
@@ -1080,21 +1207,15 @@ function clearAllFundos() {
     updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
     toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
 }
-// Corrige o filtro de data do módulo Fundos também
-const applyFilterFundosBtn = document.getElementById('applyFilterFundos');
-const fundosFilterHandler = () => {
+populateCountrySelect('countrySelectFundos');
+populateDDDSelect('dddSelectFundos');
+document.getElementById('applyFilterFundos').addEventListener('click', () => {
     const startVal = document.getElementById('startDateFundos').value;
     const endVal = document.getElementById('endDateFundos').value;
     currentStartFundos = startVal ? parseLocalDate(startVal) : null;
     currentEndFundos = endVal ? parseLocalDate(endVal) : null;
     renderCardsFundos();
-};
-applyFilterFundosBtn.removeEventListener('click', applyFilterFundosBtn._listener);
-applyFilterFundosBtn.addEventListener('click', fundosFilterHandler);
-applyFilterFundosBtn._listener = fundosFilterHandler;
-
-populateCountrySelect('countrySelectFundos');
-populateDDDSelect('dddSelectFundos');
+});
 document.getElementById('testNumberBtnFundos').addEventListener('click', () => {
     const full = getFullPhoneNumber('countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
     alert(full ? `Número completo: +${full}` : 'Número inválido');
