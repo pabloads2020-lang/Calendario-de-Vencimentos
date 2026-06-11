@@ -31,7 +31,15 @@ body.light{
   --amber:#e67e22;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s;padding-top:0}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  font-size:15px;                /* ← TAMANHO BASE PADRONIZADO */
+  min-height:100vh;
+  transition:background .2s,color .2s;
+  padding-top:0;
+}
 
 /* ==================== TOPBAR PADRÃO HUB FINANCEIRO ==================== */
 .hub-topbar {
@@ -412,7 +420,7 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-// ==================== THEME (integrado com hubThemeBtn) ====================
+// ==================== THEME ====================
 function initTheme() {
   const savedTheme = localStorage.getItem('theme');
   const btnTheme = document.getElementById('hubThemeBtn');
@@ -467,7 +475,7 @@ const countries = [
     { code: "503", name: "El Salvador", flag: "🇸🇻" }, { code: "504", name: "Honduras", flag: "🇭🇳" }, { code: "505", name: "Nicarágua", flag: "🇳🇮" }, { code: "506", name: "Costa Rica", flag: "🇨🇷" }, { code: "507", name: "Panamá", flag: "🇵🇦" }, { code: "508", name: "Saint Pierre", flag: "🇵🇲" },
     { code: "509", name: "Haiti", flag: "🇭🇹" }, { code: "590", name: "Guadalupe", flag: "🇬🇵" }, { code: "591", name: "Bolívia", flag: "🇧🇴" }, { code: "592", name: "Guiana", flag: "🇬🇾" }, { code: "593", name: "Equador", flag: "🇪🇨" }, { code: "594", name: "Guiana Francesa", flag: "🇬🇫" },
     { code: "595", name: "Paraguai", flag: "🇵🇾" }, { code: "596", name: "Martinica", flag: "🇲🇶" }, { code: "597", name: "Suriname", flag: "🇸🇷" }, { code: "598", name: "Uruguai", flag: "🇺🇾" }, { code: "599", name: "Curaçao", flag: "🇨🇼" }, { code: "670", name: "Timor-Leste", flag: "🇹🇱" },
-    { code: "672", name: "Antártida", flag: "🇦🇶" }, { code: "673", name: "Brunei", flag: "🇧🇳" }, { code: "674", name: "Nauru", flag: "🇳🇷" }, { code: "675", name: "Papua Nova Guiné", flag: "🇵🇬" }, { code: "676", name: "Tonga", flag: "🇹🇴" }, { code: "677", name: "Ilhas Salomão", flag: "🇸🇧" },
+    { code: "672", name: "Antártida", flag: "🇦🇶" }, { code: "673", name: "Brunei", flag: "🇧🇳" }, { code: "674", name: "Nauru", flag: "🇳🇺" }, { code: "675", name: "Papua Nova Guiné", flag: "🇵🇬" }, { code: "676", name: "Tonga", flag: "🇹🇴" }, { code: "677", name: "Ilhas Salomão", flag: "🇸🇧" },
     { code: "678", name: "Vanuatu", flag: "🇻🇺" }, { code: "679", name: "Fiji", flag: "🇫🇯" }, { code: "680", name: "Palau", flag: "🇵🇼" }, { code: "681", name: "Wallis", flag: "🇼🇫" }, { code: "682", name: "Ilhas Cook", flag: "🇨🇰" }, { code: "683", name: "Niue", flag: "🇳🇺" },
     { code: "684", name: "Samoa Americana", flag: "🇦🇸" }, { code: "685", name: "Samoa", flag: "🇼🇸" }, { code: "686", name: "Kiribati", flag: "🇰🇮" }, { code: "687", name: "Nova Caledônia", flag: "🇳🇨" }, { code: "688", name: "Tuvalu", flag: "🇹🇻" }, { code: "689", name: "Polinésia Francesa", flag: "🇵🇫" },
     { code: "690", name: "Tokelau", flag: "🇹🇰" }, { code: "691", name: "Micronésia", flag: "🇫🇲" }, { code: "692", name: "Ilhas Marshall", flag: "🇲🇭" }, { code: "850", name: "Coreia do Norte", flag: "🇰🇵" }, { code: "852", name: "Hong Kong", flag: "🇭🇰" }, { code: "853", name: "Macau", flag: "🇲🇴" },
@@ -759,7 +767,7 @@ function renderCardsVenc() {
                                         <div class="message-preview" id="preview-${key}-${gIdx}"></div>
                                         <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
                                     </td>
-                                </table>`;
+                                </tr>`;
                             }).join('')}
                         </tbody>
                     </table>
@@ -1136,7 +1144,7 @@ function renderCardsFundos() {
                                     <div class="message-preview" id="preview-fundos-${gIdx}"></div>
                                     <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
                                 </td>
-                             </tr>`;
+                              </tr>`;
                         }).join('')}
                     </tbody>
                 </table>
