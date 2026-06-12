@@ -311,6 +311,7 @@ tr:last-child td{border-bottom:none}
 <!-- ==================== FIM TOPBAR ==================== -->
 
 <main class="main">
+  
   <div class="tabs">
     <button class="tab-btn active" data-tab="tab-vencimentos"><span class="tab-icon">📅</span> Vencimentos — Renda Fixa</button>
     <button class="tab-btn" data-tab="tab-fundos"><span class="tab-icon">📅</span> Vencimentos — Fundos de Investimento</button>
@@ -318,20 +319,22 @@ tr:last-child td{border-bottom:none}
 
   <!-- ==================== ABA 1: VENCIMENTOS ==================== -->
   <div id="tab-vencimentos" class="tab-pane active">
-    <div class="card">
-      <div class="card-title"><span>📂 Planilha de vencimentos (renda_fixa / tesouro_direto / coe)</span></div>
-      <div class="upload-area" id="dropZoneVenc">
-        <div class="upload-icon">📊</div>
-        <div class="upload-label">Clique ou arraste o arquivo .xlsx</div>
-        <div class="upload-sub">Abas esperadas: renda_fixa · tesouro_direto · coe</div>
-        <button class="choose-btn" id="chooseFileBtnVenc">Selecionar planilha</button>
-        <input type="file" id="fileInputVenc" accept=".xlsx,.xls" style="display:none">
-      </div>
-      <div id="fileLoadedVenc" style="display:none" class="file-loaded">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-        <span id="fileLoadedNameVenc"></span>
-      </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;">
+    <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">📊 Planilha de Vencimentos (Renda Fixa / Tesouro / COE):</span>
+      <input type="file" id="fileInputVenc" accept=".xlsx,.xls" style="display:none">
+      <span id="fileLoadedNameVenc" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
+      <button id="chooseFileBtnVenc" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
+      <button id="clearBtnVenc" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
     </div>
+    <div id="dropZoneCadastro" style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;cursor:default;">
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">👥 Nome dos Clientes:</span>
+      <input type="file" id="fileInputCadastro" accept=".xlsx,.xls" style="display:none">
+      <span id="cadastroStatus" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
+      <button id="chooseBtnCadastro" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
+      <button id="clearBtnCadastro" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
+    </div>
+  </div>
     <div id="filterPanelVenc" style="display:none">
       <div class="card">
         <div class="card-title"><span>📅 Filtro de período</span></div>
@@ -357,20 +360,21 @@ tr:last-child td{border-bottom:none}
 
   <!-- ==================== ABA 2: FUNDOS ==================== -->
   <div id="tab-fundos" class="tab-pane">
-    <div class="card">
-      <div class="card-title"><span>📂 Planilha de Movimentações (Fundos de Investimento)</span></div>
-      <div class="upload-area" id="dropZoneFundos">
-        <div class="upload-icon">📈</div>
-        <div class="upload-label">Clique ou arraste o arquivo .xlsx</div>
-        <div class="upload-sub">Colunas esperadas: Código do Cliente · Operação · Fundo · Data da Liquidação · Valor Solicitado</div>
-        <button class="choose-btn" id="chooseFileBtnFundos">Selecionar planilha</button>
-        <input type="file" id="fileInputFundos" accept=".xlsx,.xls" style="display:none">
-      </div>
-      <div id="fileLoadedFundos" style="display:none" class="file-loaded">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-        <span id="fileLoadedNameFundos"></span>
-      </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;">
+    <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;">
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">📈 Planilha de Movimentações (Fundos de Investimento):</span>
+      <input type="file" id="fileInputFundos" accept=".xlsx,.xls" style="display:none">
+      <span id="fileLoadedNameFundos" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
+      <button id="chooseFileBtnFundos" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
+      <button id="clearBtnFundos" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
     </div>
+    <div id="dropZoneCadastro2" style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;cursor:default;">
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">👥 Nome dos Clientes:</span>
+      <span id="cadastroStatus2" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
+      <button id="chooseBtnCadastro2" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
+      <button id="clearBtnCadastro2" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
+    </div>
+  </div>
     <div id="filterPanelFundos" style="display:none">
       <div class="card">
         <div class="card-title"><span>📅 Filtro por data de liquidação</span></div>
@@ -446,6 +450,50 @@ function initTheme() {
   }
 }
 initTheme();
+
+// ==== CADASTRO DE CLIENTES ====
+let clientNames = {};
+
+function loadCadastro(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+        if (!rows || rows.length < 2) return;
+        const headers = rows[0].map(c => c ? c.toString().trim().toLowerCase() : '');
+        let colCod = -1, colNome = -1;
+        for (let i = 0; i < headers.length; i++) {
+            if (colCod === -1 && /cód|cod|codigo|code|client/.test(headers[i])) colCod = i;
+            if (colNome === -1 && /nome|name|razão|razao/.test(headers[i])) colNome = i;
+        }
+        if (colCod === -1 || colNome === -1) {
+            alert('Não foi possível identificar as colunas de código e nome. Verifique o cabeçalho do Excel.');
+            return;
+        }
+        clientNames = {};
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (!row[colCod]) continue;
+            clientNames[(typeof row[colCod] === 'number' ? Math.round(row[colCod]) : row[colCod]).toString().trim()] = (row[colNome] || '').toString().trim();
+        }
+        const count = Object.keys(clientNames).length;
+        
+        document.getElementById('cadastroStatus').style.cssText='display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.3);'; document.getElementById('cadastroStatus').textContent = '✓ ' + file.name + ' — ' + count + ' clientes carregados';
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function getClientDisplay(id) {
+    const nome = clientNames[id];
+    if (nome) return '<strong style="font-size:13px">' + escapeHtml(nome) + '</strong> <span style="font-size:11px;color:var(--text3);font-weight:400">#' + escapeHtml(id) + '</span>';
+    return '<strong>' + escapeHtml(id) + '</strong>';
+}
+
+function getClientName(id) {
+    return clientNames[id] || id;
+}
 
 // ==================== FUNÇÕES GLOBAIS ====================
 const countries = [
@@ -612,7 +660,7 @@ function extractFromSheetVenc(rows, sheetName) {
             }
         }
         result.push({
-            clientId: client.toString(),
+            clientId: (typeof client === 'number' ? Math.round(client) : client).toString().trim(),
             type: type.toString(),
             dueDate: dueDate,
             dueDateStr: dueDate.toLocaleDateString('pt-BR'),
@@ -644,8 +692,11 @@ async function processExcelVenc(file) {
     currentOrderVenc = 'asc';
     renderCardsVenc();
     updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
-    document.getElementById('fileLoadedNameVenc').textContent = '✓ ' + file.name + ' carregado com sucesso';
-    document.getElementById('fileLoadedVenc').style.display = 'flex';
+    const _bVenc = document.getElementById('fileLoadedNameVenc');
+    _bVenc.textContent = '✓ ' + file.name;
+    _bVenc.style.background = 'rgba(46,204,113,.12)';
+    _bVenc.style.color = 'var(--green)';
+    _bVenc.style.border = '1px solid rgba(46,204,113,.3)';
 }
 function filterByDateVenc(dataArray, start, end) {
     if (!start || !end) return dataArray;
@@ -678,7 +729,7 @@ function formatTotalItens(itens) {
 function gerarMensagemVenc(group) {
     const ativosList = group.itens.map(it => it.type).join(', ');
     const artigo = group.itens.length === 1 ? 'o seu ativo' : 'os seus ativos';
-    let msg = `Prezado(a) ${group.clientId}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}.`;
+    let msg = `Prezado(a) ${getClientName(group.clientId)}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}.`;
     const issuers = [...new Set(group.itens.map(it => it.issuer).filter(i => i))];
     if (issuers.length > 0) {
         msg += ` Emissor(es): ${issuers.join(', ')}.`;
@@ -733,7 +784,7 @@ function renderCardsVenc() {
                                 const ativosDisplay = tiposUnicos.join(', ');
                                 return `
                                 <tr data-gidx="${gIdx}" data-client="${escapeHtml(group.clientId)}" data-date="${group.dueDateStr}" data-itens='${JSON.stringify(group.itens)}'>
-                                    <td><strong>${escapeHtml(group.clientId)}</strong>${group.itens.length > 1 ? `<span class="badge-count">${group.itens.length}</span>` : ''}</td>
+                                    <td><div style="display:flex;align-items:center;gap:4px;">${getClientDisplay(group.clientId)}${group.itens.length > 1 ? `<span class="badge-count">${group.itens.length}</span>` : ''}</div></td>
                                     <td>${escapeHtml(ativosDisplay)}</td>
                                     <td>${group.dueDateStr}</td>
                                     <td>
@@ -868,20 +919,17 @@ document.getElementById('clearAllBtnVenc').addEventListener('click', clearAllVen
 document.getElementById('countrySelectVenc').addEventListener('change', () => { toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc')); updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'); });
 document.getElementById('phoneNumberVenc').addEventListener('input', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 document.addEventListener('change', (e) => { if (e.target.id === 'dddSelectVenc') updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'); });
-const dropZoneVenc = document.getElementById('dropZoneVenc');
 const fileInputVenc = document.getElementById('fileInputVenc');
+// ==== CADASTRO LISTENERS ====
+const btnCadastro = document.getElementById('chooseBtnCadastro');
+const inputCadastro = document.getElementById('fileInputCadastro');
+if (btnCadastro && inputCadastro) {
+    btnCadastro.addEventListener('click', () => inputCadastro.click());
+    inputCadastro.addEventListener('change', () => { if (inputCadastro.files[0]) loadCadastro(inputCadastro.files[0]); });
+}
+
 const chooseBtnVenc = document.getElementById('chooseFileBtnVenc');
-dropZoneVenc.addEventListener('click', () => fileInputVenc.click());
-chooseBtnVenc.addEventListener('click', (e) => { e.stopPropagation(); fileInputVenc.click(); });
-dropZoneVenc.addEventListener('dragover', (e) => { e.preventDefault(); dropZoneVenc.style.borderColor = 'var(--gold)'; });
-dropZoneVenc.addEventListener('dragleave', () => { dropZoneVenc.style.borderColor = ''; });
-dropZoneVenc.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZoneVenc.style.borderColor = '';
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) processExcelVenc(file);
-    else alert('Arquivo .xlsx ou .xls esperado');
-});
+chooseBtnVenc.addEventListener('click', () => fileInputVenc.click());
 fileInputVenc.addEventListener('change', () => { if (fileInputVenc.files[0]) processExcelVenc(fileInputVenc.files[0]); });
 toggleDDDField('dddContainerVenc', 'dddSelectVenc', 'countrySelectVenc', () => updatePhonePreview('numeroPreviewVenc', 'countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc'));
 
@@ -979,8 +1027,11 @@ async function processExcelFundos(file) {
     renderFilterCheckboxes(uniqueOps);
     renderCardsFundos();
     updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
-    document.getElementById('fileLoadedNameFundos').textContent = '✓ ' + file.name + ' carregado com sucesso';
-    document.getElementById('fileLoadedFundos').style.display = 'flex';
+    const _bFundos = document.getElementById('fileLoadedNameFundos');
+    _bFundos.textContent = '✓ ' + file.name;
+    _bFundos.style.background = 'rgba(46,204,113,.12)';
+    _bFundos.style.color = 'var(--green)';
+    _bFundos.style.border = '1px solid rgba(46,204,113,.3)';
 }
 function renderFilterCheckboxes(uniqueOps) {
     const filterContainer = document.getElementById('filterOperacaoContainer');
@@ -1064,10 +1115,10 @@ function renderCardsFundos() {
         if (itens.length === 1) {
             const it = itens[0];
             const valorFmt = it.valor ? `R$ ${it.valor}` : 'valor informado';
-            return `Prezado(a) ${cliente}, tudo bem? Recebemos sua solicitação de ${it.operacao||'operação'} no fundo ${it.fundo} no valor de ${valorFmt}, com liquidação prevista para ${dataLiqStr}. Estamos à disposição para qualquer esclarecimento.`;
+            return `Prezado(a) ${getClientName(cliente)}, tudo bem? Recebemos sua solicitação de ${it.operacao||'operação'} no fundo ${it.fundo} no valor de ${valorFmt}, com liquidação prevista para ${dataLiqStr}. Estamos à disposição para qualquer esclarecimento.`;
         }
         const linhas = itens.map(it => `• ${it.operacao||'Operação'} — ${it.fundo}: R$ ${it.valor||'—'}`).join('\n');
-        return `Prezado(a) ${cliente}, tudo bem? Informamos que você possui ${itens.length} movimentações com liquidação prevista para ${dataLiqStr}:\n\n${linhas}\n\nTotal disponível na data: R$ ${formatBR(total)}\n\nEstamos à disposição para qualquer esclarecimento.`;
+        return `Prezado(a) ${getClientName(cliente)}, tudo bem? Informamos que você possui ${itens.length} movimentações com liquidação prevista para ${dataLiqStr}:\n\n${linhas}\n\nTotal disponível na data: R$ ${formatBR(total)}\n\nEstamos à disposição para qualquer esclarecimento.`;
     }
 
     const card = document.createElement('div');
@@ -1104,7 +1155,7 @@ function renderCardsFundos() {
                             <tr data-gidx="${gIdx}">
                                 <td>
                                     <div style="display:flex;align-items:center;">
-                                        <strong>${escapeHtml(cliente)}</strong>
+                                        ${getClientDisplay(cliente)}
                                         ${itens.length > 1 ? `<span class="badge-count">${itens.length}</span>` : ''}
                                     </div>
                                 </td>
@@ -1232,20 +1283,9 @@ document.getElementById('clearAllBtnFundos').addEventListener('click', clearAllF
 document.getElementById('countrySelectFundos').addEventListener('change', () => { toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos')); updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'); });
 document.getElementById('phoneNumberFundos').addEventListener('input', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
 document.addEventListener('change', (e) => { if (e.target.id === 'dddSelectFundos') updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'); });
-const dropZoneFundos = document.getElementById('dropZoneFundos');
 const fileInputFundos = document.getElementById('fileInputFundos');
 const chooseBtnFundos = document.getElementById('chooseFileBtnFundos');
-dropZoneFundos.addEventListener('click', () => fileInputFundos.click());
-chooseBtnFundos.addEventListener('click', (e) => { e.stopPropagation(); fileInputFundos.click(); });
-dropZoneFundos.addEventListener('dragover', (e) => { e.preventDefault(); dropZoneFundos.style.borderColor = 'var(--gold)'; });
-dropZoneFundos.addEventListener('dragleave', () => { dropZoneFundos.style.borderColor = ''; });
-dropZoneFundos.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZoneFundos.style.borderColor = '';
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) processExcelFundos(file);
-    else alert('Arquivo .xlsx ou .xls esperado');
-});
+chooseBtnFundos.addEventListener('click', () => fileInputFundos.click());
 fileInputFundos.addEventListener('change', () => { if (fileInputFundos.files[0]) processExcelFundos(fileInputFundos.files[0]); });
 toggleDDDField('dddContainerFundos', 'dddSelectFundos', 'countrySelectFundos', () => updatePhonePreview('numeroPreviewFundos', 'countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos'));
 
@@ -1261,6 +1301,117 @@ tabBtns.forEach(btn => {
         document.getElementById(targetId).classList.add('active');
     });
 });
+
+// ==== BOTÕES LIMPAR ====
+// Limpar Cadastro (Nome dos Clientes)
+document.getElementById('clearBtnCadastro')?.addEventListener('click', () => {
+    clientNames = {};
+    const inp = document.getElementById('fileInputCadastro');
+    if (inp) inp.value = '';
+    const badge = document.getElementById('cadastroStatus');
+    if (badge) {
+        badge.textContent = 'Aguardando arquivo…';
+        badge.style.background = 'var(--bg3)';
+        badge.style.color = 'var(--text3)';
+        badge.style.border = '1px solid var(--card-border)';
+    }
+});
+
+// Limpar Vencimentos
+document.getElementById('clearBtnVenc')?.addEventListener('click', () => {
+    rawDataVenc = [];
+    const inp = document.getElementById('fileInputVenc');
+    if (inp) inp.value = '';
+    const badge = document.getElementById('fileLoadedNameVenc');
+    if (badge) {
+        badge.textContent = 'Aguardando arquivo…';
+        badge.style.background = 'var(--bg3)';
+        badge.style.color = 'var(--text3)';
+        badge.style.border = '1px solid var(--card-border)';
+    }
+    document.getElementById('filterPanelVenc').style.display = 'none';
+    document.getElementById('resultAreaVenc').style.display = 'none';
+});
+
+// Limpar Fundos
+document.getElementById('clearBtnFundos')?.addEventListener('click', () => {
+    rawDataFundos = [];
+    const inp = document.getElementById('fileInputFundos');
+    if (inp) inp.value = '';
+    const badge = document.getElementById('fileLoadedNameFundos');
+    if (badge) {
+        badge.textContent = 'Aguardando arquivo…';
+        badge.style.background = 'var(--bg3)';
+        badge.style.color = 'var(--text3)';
+        badge.style.border = '1px solid var(--card-border)';
+    }
+    document.getElementById('filterPanelFundos').style.display = 'none';
+    document.getElementById('resultAreaFundos').style.display = 'none';
+});
+
+// ==== CADASTRO MIRROR (aba Fundos) ====
+(function() {
+  function syncCadastroStatus(bg, color, border, text) {
+    ['cadastroStatus','cadastroStatus2'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.background = bg;
+      el.style.color = color;
+      el.style.border = border;
+      el.textContent = text;
+    });
+  }
+
+  // Mirror: Carregar Excel button (fundos tab) triggers same hidden input
+  document.getElementById('chooseBtnCadastro2')?.addEventListener('click', () => {
+    document.getElementById('fileInputCadastro')?.click();
+  });
+
+  // Mirror: Limpar button (fundos tab)
+  document.getElementById('clearBtnCadastro2')?.addEventListener('click', () => {
+    clientNames = {};
+    const inp = document.getElementById('fileInputCadastro');
+    if (inp) inp.value = '';
+    syncCadastroStatus('var(--bg3)', 'var(--text3)', '1px solid var(--card-border)', 'Aguardando arquivo…');
+  });
+
+  // Patch original clearBtnCadastro to also sync status2
+  const origClear = document.getElementById('clearBtnCadastro');
+  if (origClear) {
+    origClear.addEventListener('click', () => {
+      // slight delay so original handler runs first
+      setTimeout(() => {
+        const st = document.getElementById('cadastroStatus');
+        if (st) {
+          const el2 = document.getElementById('cadastroStatus2');
+          if (el2) {
+            el2.textContent = st.textContent;
+            el2.style.background = st.style.background;
+            el2.style.color = st.style.color;
+            el2.style.border = st.style.border;
+          }
+        }
+      }, 50);
+    });
+  }
+
+  // After file load, sync status2 to match status
+  const origInput = document.getElementById('fileInputCadastro');
+  if (origInput) {
+    origInput.addEventListener('change', () => {
+      setTimeout(() => {
+        const st = document.getElementById('cadastroStatus');
+        const st2 = document.getElementById('cadastroStatus2');
+        if (st && st2) {
+          st2.textContent = st.textContent;
+          st2.style.background = st.style.background;
+          st2.style.color = st.style.color;
+          st2.style.border = st.style.border;
+        }
+      }, 800);
+    });
+  }
+})();
 </script>
 </body>
 </html>
