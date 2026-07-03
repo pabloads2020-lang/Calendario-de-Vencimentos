@@ -727,14 +727,12 @@ function formatTotalItens(itens) {
     return `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
 }
 function gerarMensagemVenc(group) {
-    const ativosList = group.itens.map(it => it.type).join(', ');
+    const ativosList = group.itens.map(it => it.issuer ? `${it.type} ${it.issuer}` : it.type).join(', ');
     const artigo = group.itens.length === 1 ? 'o seu ativo' : 'os seus ativos';
-    let msg = `Prezado(a) ${getClientName(group.clientId)}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr}.`;
-    const issuers = [...new Set(group.itens.map(it => it.issuer).filter(i => i))];
-    if (issuers.length > 0) {
-        msg += ` Emissor(es): ${issuers.join(', ')}.`;
-    }
-    msg += ` Assim que o recurso for liquidado em sua conta, se não houver necessidade de resgate imediato por sua parte, faremos a análise para realocá-lo estrategicamente, mantendo o alinhamento com as metas da sua carteira e de acordo com as recomendações do nosso comitê de alocações. Estou à disposição caso queira alinhar algum ponto.`;
+    const totalValor = group.itens.reduce((acc, it) => acc + parseValorNumber(it.valor), 0);
+    const valorFormatado = totalValor.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    let msg = `Prezado(a) ${getClientName(group.clientId)}, tudo bem? Gostaria de comunicar que ${artigo} ${ativosList} tem o vencimento programado para o dia ${group.dueDateStr} no valor bruto aproximado de R$ ${valorFormatado}.`;
+    msg += ` Assim que o recurso for liquidado em sua conta, se não houver necessidade de resgate imediato por sua parte, faremos a análise para realocá-lo estrategicamente, mantendo o alinhamento com as metas da sua carteira e de acordo com as recomendações do nosso comitê de alocações. Estamos à disposição caso queira alinhar algum ponto.`;
     return msg;
 }
 function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
