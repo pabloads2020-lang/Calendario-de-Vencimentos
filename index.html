@@ -251,6 +251,11 @@ tr:last-child td{border-bottom:none}
 .empty-msg{padding:2rem;text-align:center;color:var(--text3);font-size:13px}
 .btn-whats{display:inline-flex;align-items:center;gap:6px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.35);border-radius:30px;padding:6px 14px;font-size:12px;font-weight:700;color:#25D366;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
 .btn-whats:hover{background:rgba(37,211,102,.18);border-color:rgba(37,211,102,.65);transform:translateY(-1px)}
+.btn-enviado{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid var(--border2);border-radius:20px;padding:6px 12px;font-size:11.5px;font-weight:700;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;white-space:nowrap}
+.btn-enviado:hover{border-color:var(--green);color:var(--green)}
+.btn-enviado.sent{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+tr.row-sent>td:not(:last-child){opacity:.55;transition:opacity .2s}
+tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
 .expand-icon{background:transparent;border:1px solid var(--border2);border-radius:20px;padding:5px 9px;font-size:11px;color:var(--text3);cursor:pointer;transition:all .2s;margin-left:6px}
 .expand-icon:hover{border-color:var(--gold);color:var(--gold)}
 .sort-icon{background:none;border:none;cursor:pointer;padding:2px 6px;font-size:13px;color:var(--gold);margin-left:4px;vertical-align:middle;border-radius:4px;transition:background .2s;font-family:'Atkinson Hyperlegible',monospace;font-weight:700}
@@ -423,6 +428,18 @@ function updateClock() {
 }
 updateClock();
 setInterval(updateClock, 1000);
+
+// ==================== CONTROLE "ENVIADO" ====================
+const ENVIADOS_STORAGE_KEY = 'calendarioVenc_enviados_v1';
+function loadEnviados() {
+  try { return new Set(JSON.parse(localStorage.getItem(ENVIADOS_STORAGE_KEY) || '[]')); }
+  catch (e) { return new Set(); }
+}
+function saveEnviados(set) {
+  try { localStorage.setItem(ENVIADOS_STORAGE_KEY, JSON.stringify([...set])); }
+  catch (e) { /* localStorage indisponível: estado não persiste, mas não quebra a página */ }
+}
+let enviadosSet = loadEnviados();
 
 // ==================== THEME ====================
 function initTheme() {
@@ -780,14 +797,17 @@ function renderCardsVenc() {
                             ${groups.map((group, gIdx) => {
                                 const tiposUnicos = [...new Set(group.itens.map(it => it.type))];
                                 const ativosDisplay = tiposUnicos.join(', ');
+                                const sentKey = `${key}::${group.clientId}::${group.dueDateStr}`;
+                                const isSent = enviadosSet.has(sentKey);
                                 return `
-                                <tr data-gidx="${gIdx}" data-client="${escapeHtml(group.clientId)}" data-date="${group.dueDateStr}" data-itens='${JSON.stringify(group.itens)}'>
+                                <tr data-gidx="${gIdx}" data-client="${escapeHtml(group.clientId)}" data-date="${group.dueDateStr}" data-itens='${JSON.stringify(group.itens)}' data-sentkey="${escapeHtml(sentKey)}" class="${isSent ? 'row-sent' : ''}">
                                     <td><div style="display:flex;align-items:center;gap:4px;">${getClientDisplay(group.clientId)}${group.itens.length > 1 ? `<span class="badge-count">${group.itens.length}</span>` : ''}</div></td>
                                     <td>${escapeHtml(ativosDisplay)}</td>
                                     <td>${group.dueDateStr}</td>
                                     <td>
                                         <div style="display:flex;align-items:center;gap:6px;">
                                             <button class="btn-whats" data-gidx="${gIdx}">${waIcon} Enviar WhatsApp</button>
+                                            <button class="btn-enviado ${isSent ? 'sent' : ''}" data-gidx="${gIdx}">${isSent ? '✓ Enviado' : '☐ Enviado'}</button>
                                             <button class="expand-icon" data-gidx="${gIdx}">▼</button>
                                         </div>
                                     </td>
@@ -880,6 +900,22 @@ function renderCardsVenc() {
                 const numero = getFullPhoneNumber('countrySelectVenc', 'dddSelectVenc', 'phoneNumberVenc', 'dddContainerVenc');
                 if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
                 window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
+            });
+            const enviadoBtn = mainRow.querySelector('.btn-enviado');
+            enviadoBtn.addEventListener('click', () => {
+                const sentKey = mainRow.getAttribute('data-sentkey');
+                if (enviadosSet.has(sentKey)) {
+                    enviadosSet.delete(sentKey);
+                    enviadoBtn.classList.remove('sent');
+                    enviadoBtn.textContent = '☐ Enviado';
+                    mainRow.classList.remove('row-sent');
+                } else {
+                    enviadosSet.add(sentKey);
+                    enviadoBtn.classList.add('sent');
+                    enviadoBtn.textContent = '✓ Enviado';
+                    mainRow.classList.add('row-sent');
+                }
+                saveEnviados(enviadosSet);
             });
         }
     }
@@ -1149,8 +1185,10 @@ function renderCardsFundos() {
                             const totalFmt = `R$ ${formatBR(total)}`;
                             const opsUniq = [...new Set(itens.map(it => it.operacao))];
                             const badgesHtml = opsUniq.map(op => opBadge(op)).join(' ');
+                            const sentKey = `fundos::${cliente}::${dataLiqStr}`;
+                            const isSent = enviadosSet.has(sentKey);
                             return `
-                            <tr data-gidx="${gIdx}">
+                            <tr data-gidx="${gIdx}" data-sentkey="${escapeHtml(sentKey)}" class="${isSent ? 'row-sent' : ''}">
                                 <td>
                                     <div style="display:flex;align-items:center;">
                                         ${getClientDisplay(cliente)}
@@ -1167,6 +1205,7 @@ function renderCardsFundos() {
                                 <td>
                                     <div style="display:flex;align-items:center;gap:6px;">
                                         <button class="btn-whats" data-gidx="${gIdx}">${waIcon} Enviar WhatsApp</button>
+                                        <button class="btn-enviado ${isSent ? 'sent' : ''}" data-gidx="${gIdx}">${isSent ? '✓ Enviado' : '☐ Enviado'}</button>
                                         <button class="expand-icon" data-gidx="${gIdx}">▼</button>
                                     </div>
                                 </td>
@@ -1244,6 +1283,23 @@ function renderCardsFundos() {
             const numero = getFullPhoneNumber('countrySelectFundos', 'dddSelectFundos', 'phoneNumberFundos', 'dddContainerFundos');
             if (!numero) { alert('Preencha o número de WhatsApp.'); return; }
             window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
+        });
+
+        const enviadoBtn = mainRow.querySelector('.btn-enviado');
+        enviadoBtn.addEventListener('click', () => {
+            const sentKey = mainRow.getAttribute('data-sentkey');
+            if (enviadosSet.has(sentKey)) {
+                enviadosSet.delete(sentKey);
+                enviadoBtn.classList.remove('sent');
+                enviadoBtn.textContent = '☐ Enviado';
+                mainRow.classList.remove('row-sent');
+            } else {
+                enviadosSet.add(sentKey);
+                enviadoBtn.classList.add('sent');
+                enviadoBtn.textContent = '✓ Enviado';
+                mainRow.classList.add('row-sent');
+            }
+            saveEnviados(enviadosSet);
         });
     });
 }
