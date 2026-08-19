@@ -9,12 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" rel="stylesheet">
 <style>
 :root{
-  --bg:#0e1117;--bg2:#161b25;--bg3:#1c2333;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --bg:#07080B;--bg2:#0D0F14;--bg3:#12151C;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.18);
   --gold:#f5c842;--gold2:#e0a800;
-  --text:#e8eaf0;--text2:#8b93a7;--text3:#555e72;
-  --card-bg:#161b25;--card-border:rgba(255,255,255,0.07);
-  --input-bg:#1c2333;--input-border:rgba(255,255,255,0.13);
+  --text:#F5F6F8;--text2:#9CA1AC;--text3:#767C8A;
+  --card-bg:#0D0F14;--card-border:rgba(255,255,255,0.08);
+  --input-bg:#12151C;--input-border:rgba(255,255,255,0.1);
   --green:#2ecc71;--green-bg:rgba(46,204,113,0.12);
   --red:#e74c3c;--red-bg:rgba(231,76,60,0.12);
   --amber:#f39c12;
@@ -51,8 +51,9 @@ body{
   --gold-topbar: #f5c842;
   --amber-topbar: #e0ac2c;
   font-family: 'DM Sans', 'Segoe UI', system-ui, sans-serif;
-  background: var(--bg-topbar);
-  border-bottom: 1px solid var(--border-topbar);
+  background: rgba(20,23,32,.3);
+  border-bottom: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 4px 16px -8px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,.05);
   height: 52px;
   display: flex;
   align-items: center;
@@ -62,6 +63,8 @@ body{
   position: sticky;
   top: 0;
   z-index: 200;
+  backdrop-filter: blur(8px) saturate(200%);
+  -webkit-backdrop-filter: blur(8px) saturate(200%);
 }
 body.light .hub-topbar {
   --bg-topbar: #ffffff;
@@ -71,6 +74,11 @@ body.light .hub-topbar {
   --text3-topbar: #8a90a8;
   --gold-topbar: #b8860b;
   --amber-topbar: #c47d00;
+  background: #ffffff;
+  border-bottom: 1px solid #d4d8e2;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .hub-topbar-left, .hub-topbar-right {
   display: flex;
@@ -324,22 +332,22 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
 <main class="main">
   
   <div class="tabs">
-    <button class="tab-btn active" data-tab="tab-vencimentos"><span class="tab-icon">📅</span> Vencimentos — Renda Fixa</button>
-    <button class="tab-btn" data-tab="tab-fundos"><span class="tab-icon">📅</span> Vencimentos — Fundos de Investimento</button>
+    <button class="tab-btn active" data-tab="tab-vencimentos">Vencimentos — Renda Fixa</button>
+    <button class="tab-btn" data-tab="tab-fundos">Vencimentos — Fundos de Investimento</button>
   </div>
 
   <!-- ==================== ABA 1: VENCIMENTOS ==================== -->
   <div id="tab-vencimentos" class="tab-pane active">
     <div style="display:flex;gap:12px;align-items:flex-start;">
     <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;">
-      <span style="font-size:.72rem;color:var(--text3);width:100%;">📊 Planilha de Vencimentos (Renda Fixa / Tesouro / COE):</span>
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">Planilha de Vencimentos (Renda Fixa / Tesouro / COE):</span>
       <input type="file" id="fileInputVenc" accept=".xlsx,.xls" style="display:none">
       <span id="fileLoadedNameVenc" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
       <button id="chooseFileBtnVenc" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
       <button id="clearBtnVenc" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
     </div>
     <div id="dropZoneCadastro" style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;cursor:default;">
-      <span style="font-size:.72rem;color:var(--text3);width:100%;">👥 Nome dos Clientes:</span>
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">Nome dos Clientes:</span>
       <input type="file" id="fileInputCadastro" accept=".xlsx,.xls" style="display:none">
       <span id="cadastroStatus" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
       <button id="chooseBtnCadastro" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
@@ -348,7 +356,7 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
   </div>
     <div id="filterPanelVenc" style="display:none">
       <div class="card">
-        <div class="card-title"><span>📅 Filtro de período</span></div>
+        <div class="card-title"><span>Filtro de período</span></div>
         <div class="filter-bar">
           <div class="fg"><span class="flabel">Data inicial</span><input class="finput" type="date" id="startDateVenc"></div>
           <div class="fg"><span class="flabel">Data final</span><input class="finput" type="date" id="endDateVenc"></div>
@@ -356,7 +364,7 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><span>📱 Número de WhatsApp</span><button class="btn-clear" id="clearAllBtnVenc">🗑 Limpar tudo</button></div>
+        <div class="card-title"><span>Número de WhatsApp</span><button class="btn-clear" id="clearAllBtnVenc"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg> Limpar tudo</button></div>
         <div class="phone-bar">
           <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelectVenc" style="min-width:180px"></select></div>
           <div class="fg" id="dddContainerVenc"><span class="flabel">DDD</span><select class="finput" id="dddSelectVenc" style="min-width:80px"></select></div>
@@ -373,14 +381,14 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
   <div id="tab-fundos" class="tab-pane">
     <div style="display:flex;gap:12px;align-items:flex-start;">
     <div style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;">
-      <span style="font-size:.72rem;color:var(--text3);width:100%;">📈 Planilha de Movimentações (Fundos de Investimento):</span>
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">Planilha de Movimentações (Fundos de Investimento):</span>
       <input type="file" id="fileInputFundos" accept=".xlsx,.xls" style="display:none">
       <span id="fileLoadedNameFundos" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
       <button id="chooseFileBtnFundos" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
       <button id="clearBtnFundos" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
     </div>
     <div id="dropZoneCadastro2" style="flex:1;min-width:220px;display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:10px;flex-wrap:wrap;margin-bottom:12px;cursor:default;">
-      <span style="font-size:.72rem;color:var(--text3);width:100%;">👥 Nome dos Clientes:</span>
+      <span style="font-size:.72rem;color:var(--text3);width:100%;">Nome dos Clientes:</span>
       <span id="cadastroStatus2" style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:.69rem;font-weight:600;background:var(--bg3);color:var(--text3);border:1px solid var(--card-border);">Aguardando arquivo…</span>
       <button id="chooseBtnCadastro2" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(245,200,66,.4);background:rgba(245,200,66,.08);color:var(--gold);font-family:inherit;transition:all .15s;margin-left:auto;" onmouseover="this.style.background='rgba(245,200,66,.15)'" onmouseout="this.style.background='rgba(245,200,66,.08)'">Carregar Excel</button>
       <button id="clearBtnCadastro2" style="display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:8px;font-size:.72rem;font-weight:600;cursor:pointer;border:1px solid rgba(180,80,80,.4);background:rgba(180,80,80,.08);color:#e07070;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='rgba(180,80,80,.15)'" onmouseout="this.style.background='rgba(180,80,80,.08)'">✕ Limpar</button>
@@ -388,7 +396,7 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
   </div>
     <div id="filterPanelFundos" style="display:none">
       <div class="card">
-        <div class="card-title"><span>📅 Filtro por data de liquidação</span></div>
+        <div class="card-title"><span>Filtro por data de liquidação</span></div>
         <div class="filter-bar">
           <div class="fg"><span class="flabel">Data inicial</span><input class="finput" type="date" id="startDateFundos"></div>
           <div class="fg"><span class="flabel">Data final</span><input class="finput" type="date" id="endDateFundos"></div>
@@ -396,7 +404,7 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><span>📱 Número de WhatsApp</span><button class="btn-clear" id="clearAllBtnFundos">🗑 Limpar tudo</button></div>
+        <div class="card-title"><span>Número de WhatsApp</span><button class="btn-clear" id="clearAllBtnFundos"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg> Limpar tudo</button></div>
         <div class="phone-bar">
           <div class="fg"><span class="flabel">País</span><select class="finput" id="countrySelectFundos" style="min-width:180px"></select></div>
           <div class="fg" id="dddContainerFundos"><span class="flabel">DDD</span><select class="finput" id="dddSelectFundos" style="min-width:80px"></select></div>
@@ -410,7 +418,7 @@ tr.row-sent>td:first-child{box-shadow:inset 3px 0 0 var(--green)}
   </div>
 </main>
 
-<footer class="footer">💡 Na aba Fundos, use os filtros de operação para exibir apenas os tipos desejados (Aplicação, Resgate Parcial, Resgate Total). Clique na seta para ver a mensagem antes de enviar.</footer>
+<footer class="footer">Na aba Fundos, use os filtros de operação para exibir apenas os tipos desejados (Aplicação, Resgate Parcial, Resgate Total). Clique na seta para ver a mensagem antes de enviar.</footer>
 
 <script>
 // ==================== TOPBAR FUNCTIONS ====================
@@ -418,7 +426,7 @@ document.getElementById('hubBackBtn')?.addEventListener('click', () => {
   if (window.self !== window.top) {
     window.parent.postMessage({ action: 'hubNavigate', target: 'home' }, '*');
   } else {
-    window.location.href = "https://pabloads2020-lang.github.io/Dashboard-Ferramentas-Integradas/";
+    window.location.href = "https://pabloads2020-lang.github.io/Dashboard-Ferramentas-Integradas/dashboard.html";
   }
 });
 document.getElementById('hubNewTabBtn')?.addEventListener('click', () => {
@@ -785,7 +793,7 @@ function renderCardsVenc() {
         const totalRegistros = data.length;
         card.innerHTML = `
             <div class="card-header">
-                <h2>${icon} ${title} <span>(${totalGroups} cliente${totalGroups!==1?'s':''} · ${totalRegistros} ativo${totalRegistros!==1?'s':''})</span></h2>
+                <h2>${title} <span>(${totalGroups} cliente${totalGroups!==1?'s':''} · ${totalRegistros} ativo${totalRegistros!==1?'s':''})</span></h2>
                 <button class="toggle-btn" data-key="${key}">Mostrar/Esconder</button>
             </div>
             <div class="table-container-${key}" style="display:block;">
@@ -795,7 +803,7 @@ function renderCardsVenc() {
                             <tr>
                                 <th>Cliente</th>
                                 <th>Ativos</th>
-                                <th>Vencimento <button class="sort-icon" data-key="${key}" title="Alternar ordem">${currentOrderVenc === 'asc' ? '🔼' : '🔽'}</button></th>
+                                <th>Vencimento <button class="sort-icon" data-key="${key}" title="Alternar ordem">${currentOrderVenc === 'asc' ? '▲' : '▼'}</button></th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
@@ -840,7 +848,7 @@ function renderCardsVenc() {
                                             </div>
                                         </div>
                                         <div class="message-preview" id="preview-${key}-${gIdx}"></div>
-                                        <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
+                                        <button class="btn-copy" data-gidx="${gIdx}">Copiar mensagem</button>
                                     </td>
                                 </tr>`;
                             }).join('')}
@@ -852,9 +860,9 @@ function renderCardsVenc() {
         if (groups.length === 0) card.querySelector('.scroll-table').innerHTML = '<div class="empty-msg">Nenhum vencimento no período.</div>';
         return card;
     };
-    resultDiv.appendChild(createCard('Renda Fixa', '📈', filtered.renda_fixa, 'renda_fixa'));
-    resultDiv.appendChild(createCard('Tesouro Direto', '🏦', filtered.tesouro_direto, 'tesouro_direto'));
-    resultDiv.appendChild(createCard('COE', '📊', filtered.coe, 'coe'));
+    resultDiv.appendChild(createCard('Renda Fixa', '', filtered.renda_fixa, 'renda_fixa'));
+    resultDiv.appendChild(createCard('Tesouro Direto', '', filtered.tesouro_direto, 'tesouro_direto'));
+    resultDiv.appendChild(createCard('COE', '', filtered.coe, 'coe'));
 
     document.querySelectorAll('#resultAreaVenc .sort-icon').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1076,7 +1084,7 @@ async function processExcelFundos(file) {
 function renderFilterCheckboxes(uniqueOps) {
     const filterContainer = document.getElementById('filterOperacaoContainer');
     if (!filterContainer) return;
-    filterContainer.innerHTML = '<div class="flabel">📌 Tipos de operação para exibir:</div><div class="filter-operacao"></div>';
+    filterContainer.innerHTML = '<div class="flabel">Tipos de operação para exibir:</div><div class="filter-operacao"></div>';
     const innerDiv = filterContainer.querySelector('.filter-operacao');
     uniqueOps.forEach(op => {
         const label = document.createElement('label');
@@ -1165,7 +1173,7 @@ function renderCardsFundos() {
     card.className = 'card';
     card.innerHTML = `
         <div class="card-header">
-            <h2>📋 Movimentações de Fundos <span>(${totalGroups} cliente${totalGroups!==1?'s':''} · ${totalRegistros} registro${totalRegistros!==1?'s':''})</span></h2>
+            <h2>Movimentações de Fundos <span>(${totalGroups} cliente${totalGroups!==1?'s':''} · ${totalRegistros} registro${totalRegistros!==1?'s':''})</span></h2>
             <div style="display:flex; gap:8px; align-items:center;">
                 <button class="toggle-btn" data-key="fundos">Mostrar/Esconder</button>
             </div>
@@ -1187,7 +1195,7 @@ function renderCardsFundos() {
                             <th>Cliente</th>
                             <th>Operações</th>
                             <th>Fundo(s)</th>
-                            <th>Data Liquidação <button class="sort-icon" data-key="fundos" title="Ordenar por data">${currentOrderFundos === 'asc' ? '🔼' : '🔽'}</button></th>
+                            <th>Data Liquidação <button class="sort-icon" data-key="fundos" title="Ordenar por data">${currentOrderFundos === 'asc' ? '▲' : '▼'}</button></th>
                             <th>Total</th>
                             <th>Ação</th>
                         </tr>
@@ -1212,7 +1220,7 @@ function renderCardsFundos() {
                                 <td>${badgesHtml}</td>
                                 <td>${itens.length === 1
                                     ? `<span title="${escapeHtml(itens[0].fundo)}" style="width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;font-size:12px;color:var(--text2)">${escapeHtml(itens[0].fundo)}</span>`
-                                    : `<span style="font-size:12px;color:var(--text3)">${itens.length} fundos — ver detalhes ↓</span>`
+                                    : `<span style="font-size:12px;color:var(--text3)">${itens.length} fundos — ver detalhes</span>`
                                 }</td>
                                 <td>${dataLiqStr}</td>
                                 <td><strong>${totalFmt}</strong></td>
@@ -1244,7 +1252,7 @@ function renderCardsFundos() {
                                         </div>
                                     </div>` : ''}
                                     <div class="message-preview" id="preview-fundos-${gIdx}"></div>
-                                    <button class="btn-copy" data-gidx="${gIdx}">📄 Copiar mensagem</button>
+                                    <button class="btn-copy" data-gidx="${gIdx}">Copiar mensagem</button>
                                 </td>
                               </tr>`;
                         }).join('')}
